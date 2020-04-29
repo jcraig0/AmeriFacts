@@ -1,0 +1,26 @@
+<div id="bar">
+    <span id="title"><b>AmeriFacts</b></span>
+    <input class="form-control" type="text" placeholder="Search" [ngbTypeahead]="search">
+</div>
+<div id="bar">
+    <div class="btn-group-toggle" id="details-btn">
+        <label class="btn btn-primary" ngbButtonLabel>
+            <input type="checkbox" ngbButton> Details
+        </label>
+    </div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>American Community Survey</button></div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>2018</button></div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>1-Year</button></div>
+    <div ngbDropdown class="dropdown">
+        <button class="btn btn-outline-secondary" id="attribute-btn" ngbDropdownToggle>{{attribute}} <b class="caret"></b></button>
+        <div ngbDropdownMenu>
+            <button ngbDropdownItem *ngFor="let attribute of attributes" (click)="selectAttribute(attribute)">
+                {{attribute}}
+            </button>
+        </div>
+    </div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>by State</button></div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>Filters</button></div>
+</div>
+<app-details></app-details>
+<div id="map">
