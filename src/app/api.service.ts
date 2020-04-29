@@ -16,4 +16,8 @@ export class ApiService {
       attribute: attribute
     }).toPromise()
   }
+
+  async getShapes(resolution: string) {
+    return await this.http.get('assets/' + resolution + 's.json').toPromise()
+  }
 }

@@ -13,9 +13,7 @@ import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import GeoJSON from 'ol/format/GeoJSON';
 import colormap from 'colormap';
-
 import { ApiService } from './api.service';
-import stateShapes from '../../shapefiles/States.json';
 
 @Component({
   selector: 'app-root',
@@ -69,7 +67,8 @@ export class AppComponent {
     var valueNums = values['Items'].map(item => +item.Population.N)
     this.bounds = { min: Math.min(...valueNums), max: Math.max(...valueNums)}
 
-    return new GeoJSON().readFeatures(stateShapes, { featureProjection: 'EPSG:3857' })
+    var shapes = await this.apiService.getShapes(resolution)
+    return new GeoJSON().readFeatures(shapes, { featureProjection: 'EPSG:3857' })
       .map(feature => { 
         var val = +values['Items'].find(item => item.ID.S.slice(-2) == feature.get('GEOID'))?.Population.N
         feature.set(attribute, val)
