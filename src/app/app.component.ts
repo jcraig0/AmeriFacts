@@ -77,7 +77,6 @@ export class AppComponent {
   }
 
   getColor(feature: FeatureLike, attribute: string) {
-    //return feature.get(attribute) < 5000000 ? [0, 0, 255, 0.5] : [255, 0, 0, 0.5]
     var value = feature.get(attribute);
     if (isNaN(value))
       return 'rgba(0, 0, 0, 0)'
