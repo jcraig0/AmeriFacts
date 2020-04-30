@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Map, View } from 'ol';
@@ -29,10 +29,15 @@ export class AppComponent {
   resolution = 'State'
   names: string[]
   bounds: { min: number, max: number }
+  mapWidth = window.innerWidth
+  mapHeight = window.innerHeight - 108
+  showDetails = false
 
   constructor(private apiService: ApiService) { }
 
   async ngOnInit() {
+    document.body.style.overflow = 'hidden'
+
     var border = new Stroke({
       color: [128, 128, 128, 0.5],
       width: 2
@@ -120,4 +125,14 @@ export class AppComponent {
       map(input => input.length < 2 ? []
         : this.names.filter(name => name.toLowerCase().includes(input.toLowerCase())))
     )
+
+  @HostListener('window:resize', ['$event'])
+  resize() {
+    this.mapWidth = window.innerWidth
+    this.mapHeight = window.innerHeight - 108
+  }
+
+  toggleDetails() {
+    this.showDetails = this.showDetails ? false : true
+  }
 }
