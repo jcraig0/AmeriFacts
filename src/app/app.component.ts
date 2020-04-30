@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Map, View } from 'ol';
-import { FeatureLike } from 'ol/Feature';
+import Feature, { FeatureLike } from 'ol/Feature';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { fromLonLat } from 'ol/proj';
@@ -14,6 +14,8 @@ import Stroke from 'ol/style/Stroke';
 import GeoJSON from 'ol/format/GeoJSON';
 import colormap from 'colormap';
 import { ApiService } from './api.service';
+import Geometry from 'ol/geom/Geometry';
+import { asArray } from 'ol/color';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +33,12 @@ export class AppComponent {
   constructor(private apiService: ApiService) { }
 
   async ngOnInit() {
-    new Map({
+    var border = new Stroke({
+      color: [128, 128, 128, 0.5],
+      width: 2
+    })
+
+    var map = new Map({
       target: 'map',
       layers: [
         new TileLayer({
@@ -43,10 +50,7 @@ export class AppComponent {
           }),
           style: feature => {
             return new Style({
-              stroke: new Stroke({
-                color: [128, 128, 128, 0.5],
-                width: 2
-              }),
+              stroke: border,
               fill: new Fill({
                 color: this.getColor(feature, this.attribute)
               })
@@ -58,7 +62,27 @@ export class AppComponent {
         center: fromLonLat(([-95, 38])),
         zoom: 5
       })
-    });
+    })
+
+    var hovered
+    map.on('pointermove', evt => {
+      if (hovered != null) {
+        hovered.setStyle(null)
+        hovered = null
+      }
+
+      map.forEachFeatureAtPixel(evt.pixel, f => {
+        hovered = <Feature<Geometry>>f
+        hovered.setStyle(new Style({
+          stroke: border,
+          fill: new Fill({
+            color: asArray(this.getColor(hovered, this.attribute))
+              .slice(0, 3).map(value => value += 50).concat([0.5])
+          })
+        }))
+        return true
+      })
+    })
   }
 
   async getFeatures(resolution: string, attribute: string) {
@@ -94,6 +118,6 @@ export class AppComponent {
   search = (input: Observable<string>) =>
     input.pipe(
       map(input => input.length < 2 ? []
-        : this.names.filter(state => state.toLowerCase().includes(input.toLowerCase())))
+        : this.names.filter(name => name.toLowerCase().includes(input.toLowerCase())))
     )
 }
