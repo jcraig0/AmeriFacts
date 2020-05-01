@@ -23,6 +23,6 @@
     <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>Filters</button></div>
 </div>
 <div>
-    <app-details [hidden]="!showDetails" [style.height.px]="mapHeight"></app-details>
+    <app-details [hidden]="!showDetails" [style.height.px]="mapHeight" [values]="values"></app-details>
     <div id="map" [style.width.px]="mapWidth - (showDetails ? 500 : 0)" [style.height.px]="mapHeight"></div>
 </div>

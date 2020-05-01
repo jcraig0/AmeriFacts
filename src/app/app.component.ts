@@ -27,6 +27,7 @@ export class AppComponent {
   attributes = ['Population', 'Area']
   attribute = this.attributes[0]
   resolution = 'State'
+  values: any[]
   names: string[]
   bounds: { min: number, max: number }
   mapWidth = window.innerWidth
@@ -91,15 +92,16 @@ export class AppComponent {
   }
 
   async getFeatures(resolution: string, attribute: string) {
-    var values = await this.apiService.getValues(resolution, attribute)
-    this.names = values['Items'].map(item => item.Name.S)
-    var valueNums = values['Items'].map(item => +item.Population.N)
+    this.values = (await this.apiService.getValues(resolution, attribute))["Items"]
+    this.values.sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
+    this.names = this.values.map(item => item.Name.S)
+    var valueNums = this.values.map(item => +item.Population.N)
     this.bounds = { min: Math.min(...valueNums), max: Math.max(...valueNums)}
 
     var shapes = await this.apiService.getShapes(resolution)
     return new GeoJSON().readFeatures(shapes, { featureProjection: 'EPSG:3857' })
       .map(feature => { 
-        var val = +values['Items'].find(item => item.ID.S.slice(-2) == feature.get('GEOID'))?.Population.N
+        var val = +this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))?.Population.N
         feature.set(attribute, val)
         return feature })
   }

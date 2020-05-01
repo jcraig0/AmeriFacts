@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-details',
@@ -6,6 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./details.component.sass']
 })
 export class DetailsComponent implements OnInit {
+
+  @Input()
+  values: any[]
 
   constructor() { }
 

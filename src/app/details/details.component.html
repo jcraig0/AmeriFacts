@@ -1,0 +1,16 @@
+<table [hidden]="showInfo">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Population</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of values; index as i">
+            <td>{{i + 1}}</td>
+            <td>{{item.Name.S}}</td>
+            <td>{{item.Population.N}}</td>
+        </tr>
+    </tbody>
+</table>
