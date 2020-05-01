@@ -14,3 +14,13 @@
         </tr>
     </tbody>
 </table>
+<div [hidden]="!showInfo">
+    <div class="line">
+        <img src="../../assets/images/arrow-left.svg" width="24" height="24">
+        <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
+    </div>
+    <div class="line">
+        <span id="infoRow">Population: {{currentItem?.Population.N}}</span>
+        <span id="order"><i>({{currentItem?.order}})</i></span>
+    </div>
+</div>

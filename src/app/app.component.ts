@@ -27,12 +27,15 @@ export class AppComponent {
   attributes = ['Population', 'Area']
   attribute = this.attributes[0]
   resolution = 'State'
+  map: Map
+  selectedFeat: Feature
   values: any[]
   names: string[]
   bounds: { min: number, max: number }
-  mapWidth = window.innerWidth
-  mapHeight = window.innerHeight - 108
+  windowWidth = window.innerWidth
+  windowHeight = window.innerHeight
   showDetails = false
+  showInfo = false
 
   constructor(private apiService: ApiService) { }
 
@@ -44,7 +47,7 @@ export class AppComponent {
       width: 2
     })
 
-    var map = new Map({
+    this.map = new Map({
       target: 'map',
       layers: [
         new TileLayer({
@@ -54,14 +57,7 @@ export class AppComponent {
           source: new VectorSource({
             features: await this.getFeatures(this.resolution, this.attribute)
           }),
-          style: feature => {
-            return new Style({
-              stroke: border,
-              fill: new Fill({
-                color: this.getColor(feature, this.attribute)
-              })
-            })
-          }
+          style: feature => this.getStyle(feature, false)
         })
       ],
       view: new View({
@@ -69,25 +65,34 @@ export class AppComponent {
         zoom: 5
       })
     })
+    this.map.setSize([window.innerWidth, window.innerHeight - 108])
 
     var hovered
-    map.on('pointermove', evt => {
+    this.map.on('pointermove', evt => {
       if (hovered != null) {
         hovered.setStyle(null)
         hovered = null
       }
 
-      map.forEachFeatureAtPixel(evt.pixel, f => {
-        hovered = <Feature<Geometry>>f
-        hovered.setStyle(new Style({
-          stroke: border,
-          fill: new Fill({
-            color: asArray(this.getColor(hovered, this.attribute))
-              .slice(0, 3).map(value => value += 50).concat([0.5])
-          })
-        }))
+      this.map.forEachFeatureAtPixel(evt.pixel, featLike => {
+        hovered = <Feature<Geometry>>featLike
+        hovered.setStyle(this.getStyle(hovered, true))
         return true
       })
+    })
+
+    this.map.on('click', evt => {
+      this.map.forEachFeatureAtPixel(evt.pixel, featLike => {
+        this.selectedFeat = <Feature<Geometry>>featLike
+        this.selectedFeat.setStyle(this.getStyle(this.selectedFeat, true))
+        this.map.getView().setCenter(fromLonLat((
+          [+this.selectedFeat.get('INTPTLON'), +this.selectedFeat.get('INTPTLAT')])))
+        this.map.getView().setZoom(7)
+        return true
+      })
+      this.showDetails = true
+      this.showInfo = true
+      this.map.setSize([window.innerWidth - (this.showDetails ? 500 : 0), window.innerHeight - 108])
     })
   }
 
@@ -106,10 +111,27 @@ export class AppComponent {
         return feature })
   }
 
+  getStyle(feature: FeatureLike, hovered: boolean) {
+    var selected = feature == this.selectedFeat
+    var fillColor = this.getColor(feature, this.attribute)
+    if (hovered)
+      fillColor = asArray(fillColor).slice(0, 3).map(value => value += 50).concat([0.5])
+
+    return new Style({
+      stroke: new Stroke({
+        color: selected ? [255, 255, 255, 1] : [128, 128, 128, 0.5],
+        width: selected ? 4 : 2
+      }),
+      fill: new Fill({
+        color: fillColor
+      })
+    })
+  }
+
   getColor(feature: FeatureLike, attribute: string) {
     var value = feature.get(attribute);
     if (isNaN(value))
-      return 'rgba(0, 0, 0, 0)'
+      return [0, 0, 0, 0]
     else {
       let colors = colormap({
         colormap: 'cool', 'format': 'rgbaString', alpha: 0.5
@@ -130,11 +152,12 @@ export class AppComponent {
 
   @HostListener('window:resize', ['$event'])
   resize() {
-    this.mapWidth = window.innerWidth
-    this.mapHeight = window.innerHeight - 108
+    this.windowWidth = window.innerWidth
+    this.windowHeight = window.innerHeight
   }
 
   toggleDetails() {
     this.showDetails = this.showDetails ? false : true
+    this.map.setSize([window.innerWidth - (this.showDetails ? 500 : 0), window.innerHeight - 108])
   }
 }
