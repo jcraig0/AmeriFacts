@@ -29,12 +29,16 @@ export class AppComponent {
   resolution = 'State'
   features: Feature[]
   map: Map
+  mapElement: HTMLElement
+  showTooltip = false
+  tooltipText: { name: string, value: number }
+  mouse: { x: number, y: number }
+  tooltipWidth: number
   selectedFeature: Feature
   values: any[]
   names: string[]
   bounds: { min: number, max: number }
-  windowWidth = window.innerWidth
-  windowHeight = window.innerHeight
+  window = { width: window.innerWidth, height: window.innerHeight }
   showDetails = false
 
   @ViewChild('detailsBtn') detailsBtn: ElementRef<HTMLElement>;
@@ -70,11 +74,17 @@ export class AppComponent {
       if (hovered != null) {
         hovered.setStyle(null)
         hovered = null
+        this.showTooltip = false
       }
 
       this.map.forEachFeatureAtPixel(evt.pixel, featLike => {
         hovered = <Feature<Geometry>>featLike
         hovered.setStyle(this.getStyle(hovered, true))
+        var item = this.values.find(item => item.ID.S.slice(-2) == hovered.get('GEOID'))
+        if (item) {
+          this.tooltipText = { name: item.Name.S, value: item.Population.N }
+          this.showTooltip = true
+        }
         return true
       })
     })
@@ -85,6 +95,16 @@ export class AppComponent {
         return true
       })
     })
+
+    this.map.getViewport().addEventListener('mouseout', () => {
+      this.showTooltip = false
+    })
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    this.mouse = { x: event.clientX, y: event.clientY }
+    this.tooltipWidth = +document.getElementById('tooltip').offsetWidth
   }
 
   async getFeatures(resolution: string, attribute: string) {
@@ -140,6 +160,7 @@ export class AppComponent {
 
     if (!this.showDetails)
       this.detailsBtn.nativeElement.click()
+    this.showTooltip = false
   }
 
   selectAttribute(attribute: string) {
@@ -162,8 +183,7 @@ export class AppComponent {
 
   @HostListener('window:resize', ['$event'])
   resize() {
-    this.windowWidth = window.innerWidth
-    this.windowHeight = window.innerHeight
+    this.window = { width: window.innerWidth, height: window.innerHeight }
   }
 
   toggleDetails() {
