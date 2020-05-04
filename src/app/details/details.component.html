@@ -9,7 +9,7 @@
     <tbody>
         <tr *ngFor="let item of values; index as i">
             <td>{{i + 1}}</td>
-            <td>{{item.Name.S}}</td>
+            <td><a [routerLink]="" (click)="clickName(item)">{{item.Name.S}}</a></td>
             <td>{{item.Population.N}}</td>
         </tr>
     </tbody>

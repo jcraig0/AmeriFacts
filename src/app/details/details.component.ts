@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Feature } from 'ol';
 
 @Component({
@@ -18,6 +18,8 @@ export class DetailsComponent {
   values: any[]
   currentItem: any
 
+  @Output() clickNameEvt = new EventEmitter()
+
   constructor() { }
 
   selectFeature(feature: Feature) {
@@ -36,6 +38,10 @@ export class DetailsComponent {
       return "th"
     else
       return otherSuff[num % 10 - 1] || "th"
+  }
+
+  clickName(item: any) {
+    this.clickNameEvt.emit(item)
   }
 
   goBack() {
