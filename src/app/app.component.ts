@@ -16,6 +16,7 @@ import colormap from 'colormap';
 import { ApiService } from './api.service';
 import Geometry from 'ol/geom/Geometry';
 import { asArray } from 'ol/color';
+import { getWidth, getHeight } from 'ol/extent'
 
 @Component({
   selector: 'app-root',
@@ -156,7 +157,8 @@ export class AppComponent {
     feature.setStyle(this.getStyle(feature, true))
     this.map.getView().setCenter(fromLonLat((
       [+feature.get('INTPTLON'), +feature.get('INTPTLAT')])))
-    this.map.getView().setZoom(7)
+    var extent = feature.getGeometry().getExtent()
+    this.map.getView().setZoom(5 * 0.92 ** (Math.max(getWidth(extent), getHeight(extent)) / 100000) + 4.5)
 
     if (!this.showDetails)
       this.detailsBtn.nativeElement.click()
