@@ -19,6 +19,7 @@ export class DetailsComponent {
   currentItem: any
 
   @Output() clickNameEvt = new EventEmitter()
+  @Output() backEvt = new EventEmitter()
 
   constructor() { }
 
@@ -46,5 +47,6 @@ export class DetailsComponent {
 
   goBack() {
     this.showInfo = false
+    this.backEvt.emit()
   }
 }

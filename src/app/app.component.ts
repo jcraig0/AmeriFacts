@@ -192,4 +192,10 @@ export class AppComponent {
     this.showDetails = this.showDetails ? false : true
     this.map.setSize([window.innerWidth - (this.showDetails ? 500 : 0), window.innerHeight - 108])
   }
+
+  deselectFeature() {
+    var feature = this.selectedFeature
+    this.selectedFeature = null
+    feature.setStyle(this.getStyle(feature, false))
+  }
 }
