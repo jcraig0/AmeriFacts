@@ -8,12 +8,11 @@ import { Feature } from 'ol';
 })
 export class DetailsComponent {
 
-  @Input()
   showInfo: boolean
   @Input()
-  set selectedFeat(feature: Feature) {
+  set selectedFeature(feature: Feature) {
     if (feature)
-      this.updateCurrentItem(feature)
+      this.selectFeature(feature)
   }
   @Input()
   values: any[]
@@ -21,7 +20,8 @@ export class DetailsComponent {
 
   constructor() { }
 
-  updateCurrentItem(feature: Feature) {
+  selectFeature(feature: Feature) {
+    this.showInfo = true
     this.currentItem = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))
     var orderNum = [...this.values].sort((item1, item2) => item2.Population.N - item1.Population.N)
       .findIndex(item => item.ID.S == this.currentItem.ID.S) + 1
@@ -38,4 +38,7 @@ export class DetailsComponent {
       return otherSuff[num % 10 - 1] || "th"
   }
 
+  goBack() {
+    this.showInfo = false
+  }
 }

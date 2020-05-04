@@ -16,7 +16,7 @@
 </table>
 <div [hidden]="!showInfo">
     <div class="line">
-        <img src="../../assets/images/arrow-left.svg" width="24" height="24">
+        <img src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="goBack()">
         <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
     </div>
     <div class="line">

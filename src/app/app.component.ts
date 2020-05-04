@@ -29,14 +29,13 @@ export class AppComponent {
   resolution = 'State'
   features: Feature[]
   map: Map
-  selectedFeat: Feature
+  selectedFeature: Feature
   values: any[]
   names: string[]
   bounds: { min: number, max: number }
   windowWidth = window.innerWidth
   windowHeight = window.innerHeight
   showDetails = false
-  showInfo = false
 
   @ViewChild('detailsBtn') detailsBtn: ElementRef<HTMLElement>;
 
@@ -104,7 +103,7 @@ export class AppComponent {
   }
 
   getStyle(feature: FeatureLike, hovered: boolean) {
-    var selected = feature == this.selectedFeat
+    var selected = feature == this.selectedFeature
     var fillColor = this.getColor(feature, this.attribute)
     if (hovered)
       fillColor = asArray(fillColor).slice(0, 3).map(value => value += 50).concat([0.5])
@@ -133,7 +132,7 @@ export class AppComponent {
   }
 
   selectFeature(feature: Feature) {
-    this.selectedFeat = feature
+    this.selectedFeature = feature
     feature.setStyle(this.getStyle(feature, true))
     this.map.getView().setCenter(fromLonLat((
       [+feature.get('INTPTLON'), +feature.get('INTPTLAT')])))
@@ -141,7 +140,6 @@ export class AppComponent {
 
     if (!this.showDetails)
       this.detailsBtn.nativeElement.click()
-    this.showInfo = true
   }
 
   selectAttribute(attribute: string) {
