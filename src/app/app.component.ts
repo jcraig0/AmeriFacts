@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Map, View } from 'ol';
@@ -27,6 +27,7 @@ export class AppComponent {
   attributes = ['Population', 'Area']
   attribute = this.attributes[0]
   resolution = 'State'
+  features: Feature[]
   map: Map
   selectedFeat: Feature
   values: any[]
@@ -37,16 +38,14 @@ export class AppComponent {
   showDetails = false
   showInfo = false
 
+  @ViewChild('detailsBtn') detailsBtn: ElementRef<HTMLElement>;
+
   constructor(private apiService: ApiService) { }
 
   async ngOnInit() {
     document.body.style.overflow = 'hidden'
 
-    var border = new Stroke({
-      color: [128, 128, 128, 0.5],
-      width: 2
-    })
-
+    this.features = await this.getFeatures(this.resolution, this.attribute)
     this.map = new Map({
       target: 'map',
       layers: [
@@ -55,7 +54,7 @@ export class AppComponent {
         }),
         new VectorLayer({
           source: new VectorSource({
-            features: await this.getFeatures(this.resolution, this.attribute)
+            features: this.features
           }),
           style: feature => this.getStyle(feature, false)
         })
@@ -82,17 +81,10 @@ export class AppComponent {
     })
 
     this.map.on('click', evt => {
-      this.map.forEachFeatureAtPixel(evt.pixel, featLike => {
-        this.selectedFeat = <Feature<Geometry>>featLike
-        this.selectedFeat.setStyle(this.getStyle(this.selectedFeat, true))
-        this.map.getView().setCenter(fromLonLat((
-          [+this.selectedFeat.get('INTPTLON'), +this.selectedFeat.get('INTPTLAT')])))
-        this.map.getView().setZoom(7)
+      this.map.forEachFeatureAtPixel(evt.pixel, featureLike => {
+        this.selectFeature(<Feature<Geometry>>featureLike)
         return true
       })
-      this.showDetails = true
-      this.showInfo = true
-      this.map.setSize([window.innerWidth - (this.showDetails ? 500 : 0), window.innerHeight - 108])
     })
   }
 
@@ -105,7 +97,7 @@ export class AppComponent {
 
     var shapes = await this.apiService.getShapes(resolution)
     return new GeoJSON().readFeatures(shapes, { featureProjection: 'EPSG:3857' })
-      .map(feature => { 
+      .map(feature => {
         var val = +this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))?.Population.N
         feature.set(attribute, val)
         return feature })
@@ -140,6 +132,18 @@ export class AppComponent {
     }
   }
 
+  selectFeature(feature: Feature) {
+    this.selectedFeat = feature
+    feature.setStyle(this.getStyle(feature, true))
+    this.map.getView().setCenter(fromLonLat((
+      [+feature.get('INTPTLON'), +feature.get('INTPTLAT')])))
+    this.map.getView().setZoom(7)
+
+    if (!this.showDetails)
+      this.detailsBtn.nativeElement.click()
+    this.showInfo = true
+  }
+
   selectAttribute(attribute: string) {
     this.attribute = attribute
   }
@@ -149,6 +153,14 @@ export class AppComponent {
       map(input => input.length < 2 ? []
         : this.names.filter(name => name.toLowerCase().includes(input.toLowerCase())))
     )
+
+  submit(query: string) {
+    var geoId = this.values.find(item => item.Name.S == query)
+    if (geoId) {
+      var feature = this.features.find(feature => feature.get('GEOID') == geoId.ID.S.slice(-2))
+      this.selectFeature(feature)
+    }
+  }
 
   @HostListener('window:resize', ['$event'])
   resize() {

@@ -1,11 +1,11 @@
 <div id="bar">
     <span id="title"><b>AmeriFacts</b></span>
-    <input class="form-control" type="text" placeholder="Search" [ngbTypeahead]="search">
+    <input class="form-control" type="text" placeholder="Search" [ngbTypeahead]="search" (keydown.enter)="submit($event.target.value)">
 </div>
 <div id="bar">
     <div class="btn-group-toggle" id="details-btn">
         <label class="btn btn-primary" ngbButtonLabel>
-            <input type="checkbox" ngbButton (click)="toggleDetails()"> Details
+            <input #detailsBtn type="checkbox" ngbButton (click)="toggleDetails()"> Details
         </label>
     </div>
     <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>American Community Survey</button></div>
