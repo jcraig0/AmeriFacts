@@ -175,7 +175,7 @@ export class AppComponent {
         : this.names.filter(name => name.toLowerCase().includes(input.toLowerCase())))
     )
 
-  submit(query: any) {
+  submit(query) {
     var item = typeof query == 'string' ? this.values.find(item => item.Name.S == query) : query
     if (item) {
       var feature = this.features.find(feature => feature.get('GEOID') == item.ID.S.slice(-2))

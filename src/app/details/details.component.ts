@@ -17,11 +17,38 @@ export class DetailsComponent {
   @Input()
   values: any[]
   currentItem: any
+  sortOrder = { name: true, value: null }
+  sortImgPath = this.getSortImgPath()
 
   @Output() clickNameEvt = new EventEmitter()
   @Output() clickOrderEvt = new EventEmitter()
 
   constructor() { }
+
+  getSortImgPath() {
+    return {
+      name: this.sortOrder.name == null ? '' :
+        '../../assets/images/chevron-' + (this.sortOrder.name ? 'down' : 'up') + '.svg',
+      value: this.sortOrder.value == null ? '' :
+        '../../assets/images/chevron-' + (this.sortOrder.value ? 'down' : 'up') + '.svg'
+    }
+  }
+
+  changeSortOrder(column, order?: boolean) {
+    if (column == 'name') {
+      this.sortOrder.name = this.sortOrder.name ? false : true
+      this.sortOrder.value = null
+      this.values.sort((item1, item2) => this.sortOrder.name ?
+        item1.Name.S.localeCompare(item2.Name.S) : item2.Name.S.localeCompare(item1.Name.S))
+    }
+    else {
+      this.sortOrder.value = order != null ? order : (this.sortOrder.value ? false : true)
+      this.sortOrder.name = null
+      this.values.sort((item1, item2) => this.sortOrder.value ?
+        item1.Population.N - item2.Population.N : item2.Population.N - item1.Population.N)
+    }
+    this.sortImgPath = this.getSortImgPath()
+  }
 
   selectFeature(feature: Feature) {
     this.showInfo = true
@@ -41,11 +68,12 @@ export class DetailsComponent {
       return otherSuff[num % 10 - 1] || "th"
   }
 
-  clickName(item: any) {
+  clickName(item) {
     this.clickNameEvt.emit(item)
   }
 
   clickOrder(attribute?: string) {
+    this.changeSortOrder('value', false)
     this.showInfo = false
     this.clickOrderEvt.emit(attribute)
   }
