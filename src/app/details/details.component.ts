@@ -28,9 +28,9 @@ export class DetailsComponent {
   getSortImgPath() {
     return {
       name: this.sortOrder.name == null ? '' :
-        '../../assets/images/chevron-' + (this.sortOrder.name ? 'down' : 'up') + '.svg',
+        '../../assets/images/chevron-' + (this.sortOrder.name ? 'up' : 'down') + '.svg',
       value: this.sortOrder.value == null ? '' :
-        '../../assets/images/chevron-' + (this.sortOrder.value ? 'down' : 'up') + '.svg'
+        '../../assets/images/chevron-' + (this.sortOrder.value ? 'up' : 'down') + '.svg'
     }
   }
 
