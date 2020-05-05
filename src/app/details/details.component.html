@@ -16,11 +16,13 @@
 </table>
 <div [hidden]="!showInfo">
     <div class="line">
-        <img src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="goBack()">
+        <img src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="clickOrder()">
         <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
     </div>
     <div class="line">
         <span id="infoRow">Population: {{currentItem?.Population.N}}</span>
-        <span id="order"><i>({{currentItem?.order}})</i></span>
+        <span id="order">
+            <i>(<a [routerLink]="" (click)="clickOrder('Population')">{{currentItem?.order}}</a>)</i>
+        </span>
     </div>
 </div>
