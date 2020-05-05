@@ -136,7 +136,8 @@ export class AppComponent {
       }),
       fill: new Fill({
         color: fillColor
-      })
+      }),
+      zIndex: selected ? 0 : -1
     })
   }
 
