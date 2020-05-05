@@ -118,9 +118,12 @@ export class AppComponent {
     var shapes = await this.apiService.getShapes(resolution)
     return new GeoJSON().readFeatures(shapes, { featureProjection: 'EPSG:3857' })
       .map(feature => {
-        var val = +this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))?.Population.N
-        feature.set(attribute, val)
-        return feature })
+        var item = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))
+        if (!item)
+          return null
+        feature.set(attribute, +item.Population.N)
+        return feature
+      }).filter(feature => feature)
   }
 
   getStyle(feature: FeatureLike, hovered: boolean) {
