@@ -37,6 +37,7 @@ export class AppComponent {
   tooltipWidth: number
   selectedFeature: Feature
   values: any[]
+  currentItem
   names: string[]
   bounds: { min: number, max: number }
   window = { width: window.innerWidth, height: window.innerHeight }
@@ -109,7 +110,7 @@ export class AppComponent {
   }
 
   async getFeatures(resolution: string, attribute: string) {
-    this.values = (await this.apiService.getValues(resolution, attribute))["Items"]
+    this.values = (await this.apiService.getAttrValues(resolution, attribute))["Items"]
     this.values.sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
     this.names = this.values.map(item => item.Name.S)
     var valueNums = this.values.map(item => +item.Population.N)
@@ -156,7 +157,23 @@ export class AppComponent {
     }
   }
 
-  selectFeature(feature: Feature) {
+  getOrderSuffix(num: number) {
+    var otherSuff = ["st", "nd", "rd"]
+    if (num > 0 && num < 4)
+      return otherSuff[num - 1]
+    else if (num < 20)
+      return "th"
+    else
+      return otherSuff[num % 10 - 1] || "th"
+  }
+
+  async selectFeature(feature: Feature) {
+    var geoId = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID')).ID.S
+    this.currentItem = (await this.apiService.getFeatValues(this.resolution, geoId))['Items'][0]
+    var orderNum = [...this.values].sort((item1, item2) => item2.Population.N - item1.Population.N)
+      .findIndex(item => item.ID.S == this.currentItem.ID.S) + 1
+    this.currentItem.order = orderNum + this.getOrderSuffix(orderNum)
+
     this.selectedFeature = feature
     feature.setStyle(this.getStyle(feature, true))
     this.map.getView().setCenter(fromLonLat((

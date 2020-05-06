@@ -24,7 +24,7 @@
 </div>
 <div>
     <app-details [hidden]="!showDetails" [style.height.px]="window.height - 108"
-        [selectedFeature]="selectedFeature" [values]="values"
+        [selectedFeature]="selectedFeature" [values]="values" [currentItem]="currentItem"
         (clickNameEvt)="submit($event)" (clickOrderEvt)="deselectFeature()"></app-details>
     <div id="map" [style.width.px]="window.width - (showDetails ? 500 : 0)" [style.height.px]="window.height - 108"></div>
     <div id="tooltip" [hidden]="!showTooltip" [style.left.px]="mouse?.x - tooltipWidth / 2" [style.top.px] = "mouse?.y - 80">

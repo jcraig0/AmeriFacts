@@ -10,10 +10,17 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  async getValues(resolution: string, attribute: string) {
-    return await this.http.post(this.rootUrl + 'values', {
+  async getAttrValues(resolution: string, attribute: string) {
+    return await this.http.post(this.rootUrl + 'attribute', {
       resolution: resolution,
       attribute: attribute
+    }).toPromise()
+  }
+
+  async getFeatValues(resolution: string, featureId: string) {
+    return await this.http.post(this.rootUrl + 'feature', {
+      resolution: resolution,
+      featureId: featureId
     }).toPromise()
   }
 
