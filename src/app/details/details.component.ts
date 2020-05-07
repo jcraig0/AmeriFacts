@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Feature } from 'ol';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-details',
@@ -8,23 +9,38 @@ import { Feature } from 'ol';
 })
 export class DetailsComponent {
 
-  showInfo: boolean
+  @Input() showInfo: boolean
+  @Input() attributes: string[]
+  @Input() attribute: string
+  @Input() resolution: string
   @Input()
   set selectedFeature(feature: Feature) {
     if (feature)
-      this.showInfo = true
+      this.setOrderNums()
   }
-  @Input()
-  values: any[]
-  @Input()
-  currentItem
+  @Input() values: any[]
+  @Input() currentItem
   sortOrder = { name: true, value: null }
   sortImgPath = this.getSortImgPath()
+  orderNums = {}
 
   @Output() clickNameEvt = new EventEmitter()
+  @Output() clickBackEvt = new EventEmitter()
   @Output() clickOrderEvt = new EventEmitter()
 
-  constructor() { }
+  constructor(private apiService: ApiService) { }
+
+  async setOrderNums() {
+    for (let attribute of this.attributes) {
+      if (!(attribute in this.orderNums)) {
+        var sortedVals = (attribute in this.values[0] ? this.values :
+          (await this.apiService.getAttrValues(this.resolution, attribute))['Items'])
+          .sort((item1, item2) => item2[attribute].N - item1[attribute].N)
+        this.orderNums[attribute] = {}
+        sortedVals.map((item, idx) => this.orderNums[attribute][item.Name.S] = idx + 1)
+      }
+    }
+  }
 
   getSortImgPath() {
     return {
@@ -35,7 +51,7 @@ export class DetailsComponent {
     }
   }
 
-  changeSortOrder(column, order?: boolean) {
+  changeSortOrder(column, orderClicked?: boolean) {
     if (column == 'name') {
       this.sortOrder.name = this.sortOrder.name ? false : true
       this.sortOrder.value = null
@@ -43,10 +59,12 @@ export class DetailsComponent {
         item1.Name.S.localeCompare(item2.Name.S) : item2.Name.S.localeCompare(item1.Name.S))
     }
     else {
-      this.sortOrder.value = order != null ? order : (this.sortOrder.value ? false : true)
+      this.sortOrder.value = orderClicked ? false : (this.sortOrder.value ? false : true)
       this.sortOrder.name = null
-      this.values.sort((item1, item2) => this.sortOrder.value ?
-        item1.Population.N - item2.Population.N : item2.Population.N - item1.Population.N)
+      if (!orderClicked) {
+        this.values.sort((item1, item2) => this.sortOrder.value ?
+          item1[this.attribute].N - item2[this.attribute].N : item2[this.attribute].N - item1[this.attribute].N)
+      }
     }
     this.sortImgPath = this.getSortImgPath()
   }
@@ -55,9 +73,26 @@ export class DetailsComponent {
     this.clickNameEvt.emit(item)
   }
 
-  clickOrder(attribute?: string) {
-    this.changeSortOrder('value', false)
-    this.showInfo = false
+  clickBack() {
+    this.clickBackEvt.emit()
+  }
+
+  clickOrder(attribute: string) {
     this.clickOrderEvt.emit(attribute)
+    this.changeSortOrder('value', true)
+  }
+
+  getOrderStr(num: number) {
+    var suffix: string
+    var otherSuff = ["st", "nd", "rd"]
+
+    if (num > 0 && num < 4)
+      suffix = otherSuff[num - 1]
+    else if (num < 20)
+      suffix = "th"
+    else
+      suffix = otherSuff[num % 10 - 1] || "th"
+
+    return num + suffix
   }
 }

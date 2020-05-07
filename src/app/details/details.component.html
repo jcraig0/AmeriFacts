@@ -6,7 +6,7 @@
                 Name<img class="sortImg" src={{sortImgPath.name}} width="12" height="12">
             </th>
             <th class="sortColumn" (click)="changeSortOrder('value')">
-                Population<img class="sortImg" src={{sortImgPath.value}} width="12" height="12">
+                {{attribute}}<img class="sortImg" src={{sortImgPath.value}} width="12" height="12">
             </th>
         </tr>
     </thead>
@@ -14,19 +14,20 @@
         <tr *ngFor="let item of values; index as i">
             <td>{{i + 1}}</td>
             <td><a [routerLink]="" (click)="clickName(item)">{{item.Name.S}}</a></td>
-            <td>{{item.Population.N}}</td>
+            <td>{{item[attribute]?.N}}</td>
         </tr>
     </tbody>
 </table>
 <div [hidden]="!showInfo">
     <div class="line">
-        <img id="backBtn" src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="clickOrder()">
+        <img id="backBtn" src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="clickBack()">
         <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
     </div>
-    <div class="line">
-        <span id="infoRow">Population: {{currentItem?.Population.N}}</span>
+    <div class="line" *ngFor="let attribute of attributes">
+        <span id="infoRow">{{attribute}}: {{currentItem && currentItem[attribute].N}}</span>
         <span id="order">
-            <i>(<a [routerLink]="" (click)="clickOrder('Population')">{{currentItem?.order}}</a>)</i>
+            <i>(<a [routerLink]="" (click)="clickOrder(attribute)"
+                >{{orderNums[attribute] && getOrderStr(orderNums[attribute][currentItem?.Name.S])}}</a>)</i>
         </span>
     </div>
 </div>

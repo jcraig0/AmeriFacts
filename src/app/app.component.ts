@@ -1,5 +1,5 @@
 import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Map, View } from 'ol';
 import Feature, { FeatureLike } from 'ol/Feature';
@@ -25,8 +25,8 @@ import { getWidth, getHeight } from 'ol/extent'
 })
 export class AppComponent {
   title = 'amerifacts'
-  attributes = ['Population', 'Area']
-  attribute = this.attributes[0]
+  attributes: string[]
+  attribute = 'Population'
   resolution = 'State'
   features: Feature[]
   map: Map
@@ -42,8 +42,9 @@ export class AppComponent {
   bounds: { min: number, max: number }
   window = { width: window.innerWidth, height: window.innerHeight }
   showDetails = false
+  showInfo: boolean
 
-  @ViewChild('detailsBtn') detailsBtn: ElementRef<HTMLElement>;
+  @ViewChild('detailsBtn') detailsBtn: ElementRef<HTMLElement>
 
   constructor(private apiService: ApiService) { }
 
@@ -58,9 +59,7 @@ export class AppComponent {
           source: new OSM()
         }),
         new VectorLayer({
-          source: new VectorSource({
-            features: this.features
-          }),
+          source: new VectorSource({ features: this.features }),
           style: feature => this.getStyle(feature, false)
         })
       ],
@@ -84,7 +83,7 @@ export class AppComponent {
         hovered.setStyle(this.getStyle(hovered, true))
         var item = this.values.find(item => item.ID.S.slice(-2) == hovered.get('GEOID'))
         if (item) {
-          this.tooltipText = { name: item.Name.S, value: item.Population.N }
+          this.tooltipText = { name: item.Name.S, value: item[this.attribute]?.N }
           this.showTooltip = true
         }
         return true
@@ -110,21 +109,30 @@ export class AppComponent {
   }
 
   async getFeatures(resolution: string, attribute: string) {
-    this.values = (await this.apiService.getAttrValues(resolution, attribute))["Items"]
-    this.values.sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
+    this.values = (await this.apiService.getAttrValues(resolution, attribute))['Items']
+      .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
+    this.attributes = Object.keys(
+      (await this.apiService.getFeatValues(resolution, this.values[0].ID.S))['Items'][0])
+      .filter(attr => !['ID', 'Name'].includes(attr))
     this.names = this.values.map(item => item.Name.S)
-    var valueNums = this.values.map(item => +item.Population.N)
+    var valueNums = this.values.map(item => +item[this.attribute].N)
     this.bounds = { min: Math.min(...valueNums), max: Math.max(...valueNums)}
 
-    var shapes = await this.apiService.getShapes(resolution)
-    return new GeoJSON().readFeatures(shapes, { featureProjection: 'EPSG:3857' })
-      .map(feature => {
-        var item = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))
-        if (!item)
-          return null
-        feature.set(attribute, +item.Population.N)
-        return feature
-      }).filter(feature => feature)
+    var features
+    if (this.features)
+      features = this.features
+    else {
+      features = new GeoJSON().readFeatures(await this.apiService.getShapes(resolution),
+        { featureProjection: 'EPSG:3857' })
+    }
+    return features.map(feature => {
+      var item = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))
+      if (!item)
+        return null
+      feature.set(attribute, +item[this.attribute].N)
+      feature.setStyle(this.getStyle(feature, false))
+      return feature
+    }).filter(feature => feature)
   }
 
   getStyle(feature: FeatureLike, hovered: boolean) {
@@ -157,22 +165,9 @@ export class AppComponent {
     }
   }
 
-  getOrderSuffix(num: number) {
-    var otherSuff = ["st", "nd", "rd"]
-    if (num > 0 && num < 4)
-      return otherSuff[num - 1]
-    else if (num < 20)
-      return "th"
-    else
-      return otherSuff[num % 10 - 1] || "th"
-  }
-
   async selectFeature(feature: Feature) {
     var geoId = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID')).ID.S
     this.currentItem = (await this.apiService.getFeatValues(this.resolution, geoId))['Items'][0]
-    var orderNum = [...this.values].sort((item1, item2) => item2.Population.N - item1.Population.N)
-      .findIndex(item => item.ID.S == this.currentItem.ID.S) + 1
-    this.currentItem.order = orderNum + this.getOrderSuffix(orderNum)
 
     this.selectedFeature = feature
     feature.setStyle(this.getStyle(feature, true))
@@ -181,13 +176,25 @@ export class AppComponent {
     var extent = feature.getGeometry().getExtent()
     this.map.getView().setZoom(5 * 0.92 ** (Math.max(getWidth(extent), getHeight(extent)) / 100000) + 4.5)
 
+    this.showInfo = true
     if (!this.showDetails)
       this.detailsBtn.nativeElement.click()
     this.showTooltip = false
   }
 
-  selectAttribute(attribute: string) {
-    this.attribute = attribute
+  selectAttribute(attribute: string, deselect?: boolean) {
+    if (this.attribute != attribute) {
+      this.attribute = attribute
+      from(this.getFeatures(this.resolution, this.attribute)).subscribe(features => {
+        this.features = features
+        if (deselect) {
+          this.values.sort((item1, item2) => item2[this.attribute].N - item1[this.attribute].N)
+          this.deselectFeature()
+        }
+      })
+    }
+    else if (deselect)
+      this.deselectFeature()
   }
 
   search = (input: Observable<string>) =>
@@ -211,12 +218,13 @@ export class AppComponent {
 
   toggleDetails() {
     this.showDetails = this.showDetails ? false : true
-    this.map.setSize([window.innerWidth - (this.showDetails ? 500 : 0), window.innerHeight - 108])
+    this.map.setSize([window.innerWidth - (this.showDetails ? 550 : 0), window.innerHeight - 108])
   }
 
   deselectFeature() {
     var feature = this.selectedFeature
     this.selectedFeature = null
     feature.setStyle(this.getStyle(feature, false))
+    this.showInfo = false
   }
 }
