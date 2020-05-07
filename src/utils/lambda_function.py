@@ -9,8 +9,8 @@ def lambda_handler(event, context):
         'body': json.dumps(
             boto3.client('dynamodb').scan(
                 TableName=body['resolution'] + 's',
-                ExpressionAttributeNames={'#N': 'Name'},
-                ProjectionExpression='ID, #N, ' + body['attribute']
+                ExpressionAttributeNames={'#N': 'Name', '#A': body['attribute']},
+                ProjectionExpression='ID, #N, #A'
             ) if event['rawPath'] == '/attribute' else
             boto3.client('dynamodb').query(
                 TableName=body['resolution'] + 's',
