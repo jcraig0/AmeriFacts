@@ -21,8 +21,10 @@ export class DetailsComponent {
   values: any[]
   @Input()
   set _values(values: any[]) {
-    if (values)
-      this.values = this.sortValues(values)
+    if (values) {
+      this.values = values
+      this.sortValues()
+    }
   }
   @Input() currentItem
   sortOrder = { name: true, value: null }
@@ -56,13 +58,13 @@ export class DetailsComponent {
     }
   }
 
-  sortValues(values: any[]) {
+  sortValues() {
     if (this.sortOrder.name != null) {
-      return values.sort((item1, item2) => this.sortOrder.name ?
+      this.values.sort((item1, item2) => this.sortOrder.name ?
         item1.Name.S.localeCompare(item2.Name.S) : item2.Name.S.localeCompare(item1.Name.S))
     }
     else {
-      return values.sort((item1, item2) => this.sortOrder.value ?
+      this.values.sort((item1, item2) => this.sortOrder.value ?
         item1[this.attribute].N - item2[this.attribute].N : item2[this.attribute].N - item1[this.attribute].N)
     }
   }
@@ -78,7 +80,7 @@ export class DetailsComponent {
     }
 
     if (!orderClicked)
-      this.values = this.sortValues(this.values)
+      this.sortValues()
     this.sortImgPath = this.getSortImgPath()
   }
 
@@ -91,6 +93,7 @@ export class DetailsComponent {
   }
 
   clickBack() {
+    this.sortValues()
     this.clickBackEvt.emit()
   }
 
