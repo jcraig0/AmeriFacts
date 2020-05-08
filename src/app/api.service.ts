@@ -27,4 +27,8 @@ export class ApiService {
   async getShapes(resolution: string) {
     return await this.http.get('assets/shapefiles/' + resolution + 's.json').toPromise()
   }
+
+  formatValue(value: string, isCurrency: boolean) {
+    return (isCurrency ? '$' : '') + (+value).toLocaleString()
+  }
 }

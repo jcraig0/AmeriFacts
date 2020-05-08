@@ -14,7 +14,7 @@
         <tr *ngFor="let item of values; index as i">
             <td>{{i + 1}}</td>
             <td><a [routerLink]="" (click)="clickName(item)">{{item.Name.S}}</a></td>
-            <td>{{item[attribute]?.N}}</td>
+            <td>{{formatValue(item[attribute]?.N, attribute)}}</td>
         </tr>
     </tbody>
 </table>
@@ -24,7 +24,7 @@
         <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
     </div>
     <div class="line" *ngFor="let attribute of attributes">
-        <span id="infoRow">{{attribute}}: {{currentItem && currentItem[attribute].N}}</span>
+        <span id="infoRow">{{attribute}}: {{currentItem && formatValue(currentItem[attribute].N, attribute)}}</span>
         <span id="order">
             <i>(<a [routerLink]="" (click)="clickOrder(attribute)"
                 >{{orderNums[attribute] && getOrderStr(orderNums[attribute][currentItem?.Name.S])}}</a>)</i>

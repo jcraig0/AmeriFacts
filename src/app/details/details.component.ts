@@ -21,7 +21,8 @@ export class DetailsComponent {
   values: any[]
   @Input()
   set _values(values: any[]) {
-    this.values = this.sortValues(values)
+    if (values)
+      this.values = this.sortValues(values)
   }
   @Input() currentItem
   sortOrder = { name: true, value: null }
@@ -79,6 +80,10 @@ export class DetailsComponent {
     if (!orderClicked)
       this.values = this.sortValues(this.values)
     this.sortImgPath = this.getSortImgPath()
+  }
+
+  formatValue(value: string, attribute: string) {
+    return this.apiService.formatValue(value, attribute.includes('Income'))
   }
 
   clickName(item) {

@@ -32,7 +32,7 @@ export class AppComponent {
   map: Map
   mapElement: HTMLElement
   showTooltip = false
-  tooltipText: { name: string, value: number }
+  tooltipText: { name: string, value: string }
   mouse: { x: number, y: number }
   tooltipWidth: number
   selectedFeature: Feature
@@ -83,7 +83,9 @@ export class AppComponent {
         hovered.setStyle(this.getStyle(hovered, true))
         var item = this.values.find(item => item.ID.S.slice(-2) == hovered.get('GEOID'))
         if (item) {
-          this.tooltipText = { name: item.Name.S, value: item[this.attribute]?.N }
+          let tooltipValue = this.apiService.formatValue(item[this.attribute]?.N,
+            this.attribute.includes('Income'))
+          this.tooltipText = { name: item.Name.S, value: tooltipValue }
           this.showTooltip = true
         }
         return true
