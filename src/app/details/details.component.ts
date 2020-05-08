@@ -18,7 +18,11 @@ export class DetailsComponent {
     if (feature)
       this.setOrderNums()
   }
-  @Input() values: any[]
+  values: any[]
+  @Input()
+  set _values(values: any[]) {
+    this.values = this.sortValues(values)
+  }
   @Input() currentItem
   sortOrder = { name: true, value: null }
   sortImgPath = this.getSortImgPath()
@@ -51,21 +55,29 @@ export class DetailsComponent {
     }
   }
 
-  changeSortOrder(column, orderClicked?: boolean) {
+  sortValues(values: any[]) {
+    if (this.sortOrder.name != null) {
+      return values.sort((item1, item2) => this.sortOrder.name ?
+        item1.Name.S.localeCompare(item2.Name.S) : item2.Name.S.localeCompare(item1.Name.S))
+    }
+    else {
+      return values.sort((item1, item2) => this.sortOrder.value ?
+        item1[this.attribute].N - item2[this.attribute].N : item2[this.attribute].N - item1[this.attribute].N)
+    }
+  }
+
+  changeSortOrder(column: string, orderClicked?: boolean) {
     if (column == 'name') {
       this.sortOrder.name = this.sortOrder.name ? false : true
       this.sortOrder.value = null
-      this.values.sort((item1, item2) => this.sortOrder.name ?
-        item1.Name.S.localeCompare(item2.Name.S) : item2.Name.S.localeCompare(item1.Name.S))
     }
     else {
       this.sortOrder.value = orderClicked ? false : (this.sortOrder.value ? false : true)
       this.sortOrder.name = null
-      if (!orderClicked) {
-        this.values.sort((item1, item2) => this.sortOrder.value ?
-          item1[this.attribute].N - item2[this.attribute].N : item2[this.attribute].N - item1[this.attribute].N)
-      }
     }
+
+    if (!orderClicked)
+      this.values = this.sortValues(this.values)
     this.sortImgPath = this.getSortImgPath()
   }
 
