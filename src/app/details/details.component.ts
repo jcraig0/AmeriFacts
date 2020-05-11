@@ -16,20 +16,31 @@ export class DetailsComponent {
   @Input()
   set selectedFeature(feature: Feature) {
     if (feature)
-      this.setOrderNums()
+      this.setOrderNums(false)
   }
   values: any[]
   @Input()
   set _values(values: any[]) {
     if (values) {
       this.values = values
+      if (this.showInfo)
+        this.setOrderNums(true)
       this.sortValues()
     }
   }
-  @Input() currentItem
+  currentItem
+  @Input()
+  set _currentItem(item) {
+    this.currentItem = item
+    if (Object.keys(this.orderNums).length) {
+      this.attributes.forEach(attribute =>
+        this.currOrderNums[attribute] = this.orderNums[attribute][item.Name.S])
+    }
+  }
   sortOrder = { name: true, value: null }
   sortImgPath = this.getSortImgPath()
   orderNums = {}
+  currOrderNums = {}
 
   @Output() clickNameEvt = new EventEmitter()
   @Output() clickBackEvt = new EventEmitter()
@@ -37,7 +48,9 @@ export class DetailsComponent {
 
   constructor(private apiService: ApiService) { }
 
-  async setOrderNums() {
+  async setOrderNums(newValues: boolean) {
+    if (newValues)
+      this.orderNums = {}
     for (let attribute of this.attributes) {
       if (!(attribute in this.orderNums)) {
         var sortedVals = (attribute in this.values[0] ? this.values :
@@ -46,6 +59,8 @@ export class DetailsComponent {
         this.orderNums[attribute] = {}
         sortedVals.map((item, idx) => this.orderNums[attribute][item.Name.S] = idx + 1)
       }
+      if (!newValues)
+        this.currOrderNums[attribute] = this.orderNums[attribute][this.currentItem.Name.S]
     }
   }
 

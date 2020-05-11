@@ -27,7 +27,7 @@
         <span id="infoRow">{{attribute}}: {{currentItem && formatValue(currentItem[attribute].N, attribute)}}</span>
         <span id="order">
             <i>(<a [routerLink]="" (click)="clickOrder(attribute)"
-                >{{orderNums[attribute] && getOrderStr(orderNums[attribute][currentItem?.Name.S])}}</a>)</i>
+                >{{getOrderStr(currOrderNums[attribute])}}</a>)</i>
         </span>
     </div>
 </div>
