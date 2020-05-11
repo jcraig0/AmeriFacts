@@ -158,11 +158,11 @@ export class AppComponent {
     var selected = feature == this.selectedFeature
     var fillColor = this.getColor(feature, this.attribute)
     if (hovered)
-      fillColor = asArray(fillColor).slice(0, 3).map(value => value += 50).concat([0.5])
+      fillColor = asArray(fillColor).slice(0, 3).map(value => value += 50).concat([.5])
 
     return new Style({
       stroke: new Stroke({
-        color: selected ? [255, 255, 255, 1] : [128, 128, 128, 0.5],
+        color: selected ? [255, 255, 255, 1] : [128, 128, 128, .5],
         width: selected ? 4 : 2
       }),
       fill: new Fill({
@@ -178,7 +178,7 @@ export class AppComponent {
       return [0, 0, 0, 0]
     else {
       let colors = colormap({
-        colormap: 'cool', 'format': 'rgbaString', alpha: 0.5
+        colormap: 'cool', 'format': 'rgbaString', alpha: .5
       })
       return colors[~~((value - this.bounds.min) * (colors.length - 1) / (this.bounds.max - this.bounds.min))]
     }
@@ -193,7 +193,7 @@ export class AppComponent {
     this.map.getView().setCenter(fromLonLat((
       [+feature.get('INTPTLON'), +feature.get('INTPTLAT')])))
     var extent = feature.getGeometry().getExtent()
-    this.map.getView().setZoom(5 * 0.92 ** (Math.max(getWidth(extent), getHeight(extent)) / 100000) + 4.5)
+    this.map.getView().setZoom(1 / (.15 * (Math.max(getWidth(extent), getHeight(extent)) / 100000) ** .24) + 3)
 
     this.showInfo = true
     if (!this.showDetails)
