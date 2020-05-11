@@ -8,19 +8,26 @@
             <input #detailsBtn type="checkbox" ngbButton (click)="toggleDetails()"> Details
         </label>
     </div>
-    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>American Community Survey</button></div>
-    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>2018</button></div>
-    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>1-Year</button></div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>American Community Survey  </button></div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>2018  </button></div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>1-Year  </button></div>
     <div ngbDropdown class="dropdown">
-        <button class="btn btn-outline-secondary" id="attribute-btn" ngbDropdownToggle>{{attribute}} <b class="caret"></b></button>
+        <button class="btn btn-outline-secondary" id="attribute-btn" ngbDropdownToggle>{{attribute}}  </button>
         <div ngbDropdownMenu>
             <button ngbDropdownItem *ngFor="let attribute of attributes" (click)="selectAttribute(attribute)">
                 {{attribute}}
             </button>
         </div>
     </div>
-    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>by State</button></div>
-    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>Filters</button></div>
+    <div ngbDropdown class="dropdown">
+        <button class="btn btn-outline-secondary" id="resolution-btn" ngbDropdownToggle>by {{resolution}}  </button>
+        <div ngbDropdownMenu>
+            <button ngbDropdownItem *ngFor="let resolution of resolutions" (click)="selectResolution(resolution)">
+                {{resolution}}
+            </button>
+        </div>
+    </div>
+    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>Filters  </button></div>
 </div>
 <div>
     <app-details [hidden]="!showDetails" [style.height.px]="window.height - 108"

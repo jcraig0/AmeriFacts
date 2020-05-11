@@ -27,7 +27,8 @@ export class AppComponent {
   title = 'amerifacts'
   attributes: string[]
   attribute = 'Population'
-  resolution = 'State'
+  resolutions = ['State', 'County', 'Congressional District']
+  resolution = this.resolutions[0]
   features: Feature[]
   map: Map
   mapElement: HTMLElement
@@ -56,6 +57,7 @@ export class AppComponent {
       target: 'map',
       layers: [
         new TileLayer({
+          preload: Infinity,
           source: new OSM()
         }),
         new VectorLayer({
@@ -81,7 +83,7 @@ export class AppComponent {
       this.map.forEachFeatureAtPixel(evt.pixel, featLike => {
         hovered = <Feature<Geometry>>featLike
         hovered.setStyle(this.getStyle(hovered, true))
-        var item = this.values.find(item => item.ID.S.slice(-2) == hovered.get('GEOID'))
+        var item = this.values.find(item => this.getShortenedId(item) == hovered.get('GEOID'))
         if (item) {
           let tooltipValue = this.apiService.formatValue(item[this.attribute]?.N,
             this.attribute.includes('Income'))
@@ -104,13 +106,28 @@ export class AppComponent {
     })
   }
 
+  getShortenedId(item) {
+    var idLen
+    switch (this.resolution) {
+      case 'State':
+        idLen = 2
+        break
+      case 'County':
+        idLen = 5
+        break
+      case 'Congressional District':
+        idLen = 4
+    }
+    return item.ID.S.slice(-idLen)
+  }
+
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     this.mouse = { x: event.clientX, y: event.clientY }
     this.tooltipWidth = +document.getElementById('tooltip').offsetWidth
   }
 
-  async getFeatures(resolution: string, attribute: string) {
+  async getFeatures(resolution: string, attribute: string, isNewRes?: boolean) {
     this.values = (await this.apiService.getAttrValues(resolution, attribute))['Items']
       .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
     this.attributes = Object.keys(
@@ -121,14 +138,14 @@ export class AppComponent {
     this.bounds = { min: Math.min(...valueNums), max: Math.max(...valueNums)}
 
     var features
-    if (this.features)
+    if (this.features && !isNewRes)
       features = this.features
     else {
       features = new GeoJSON().readFeatures(await this.apiService.getShapes(resolution),
         { featureProjection: 'EPSG:3857' })
     }
     return features.map(feature => {
-      var item = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID'))
+      var item = this.values.find(item => this.getShortenedId(item) == feature.get('GEOID'))
       if (!item)
         return null
       feature.set(attribute, +item[this.attribute].N)
@@ -168,7 +185,7 @@ export class AppComponent {
   }
 
   async selectFeature(feature: Feature) {
-    var geoId = this.values.find(item => item.ID.S.slice(-2) == feature.get('GEOID')).ID.S
+    var geoId = this.values.find(item => this.getShortenedId(item) == feature.get('GEOID')).ID.S
     this.currentItem = (await this.apiService.getFeatValues(this.resolution, geoId))['Items'][0]
 
     this.selectedFeature = feature
@@ -199,6 +216,12 @@ export class AppComponent {
       this.deselectFeature()
   }
 
+  async selectResolution(resolution: string) {
+    this.resolution = resolution
+    this.features = await this.getFeatures(this.resolution, this.attribute, true)
+    this.map.getLayers().item(1).set('source', new VectorSource({ features: this.features }))
+  }
+
   search = (input: Observable<string>) =>
     input.pipe(
       map(input => input.length < 2 ? []
@@ -208,7 +231,7 @@ export class AppComponent {
   submit(query) {
     var item = typeof query == 'string' ? this.values.find(item => item.Name.S == query) : query
     if (item) {
-      var feature = this.features.find(feature => feature.get('GEOID') == item.ID.S.slice(-2))
+      var feature = this.features.find(feature => feature.get('GEOID') == this.getShortenedId(item))
       this.selectFeature(feature)
     }
   }

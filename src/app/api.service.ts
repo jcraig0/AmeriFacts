@@ -12,14 +12,14 @@ export class ApiService {
 
   async getAttrValues(resolution: string, attribute: string) {
     return await this.http.post(this.rootUrl + 'attribute', {
-      resolution: resolution,
+      resolution: resolution.replace(' ', '_'),
       attribute: attribute
     }).toPromise()
   }
 
   async getFeatValues(resolution: string, featureId: string) {
     return await this.http.post(this.rootUrl + 'feature', {
-      resolution: resolution,
+      resolution: resolution.replace(' ', '_'),
       featureId: featureId
     }).toPromise()
   }
