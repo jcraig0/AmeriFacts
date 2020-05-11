@@ -17,6 +17,7 @@ import { ApiService } from './api.service';
 import Geometry from 'ol/geom/Geometry';
 import { asArray } from 'ol/color';
 import { getWidth, getHeight } from 'ol/extent'
+import Text from 'ol/style/Text';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,7 @@ export class AppComponent {
   title = 'amerifacts'
   attributes: string[]
   attribute = 'Population'
-  resolutions = ['State', 'County', 'Congressional District']
+  resolutions = ['State', 'Congressional District', 'County']
   resolution = this.resolutions[0]
   features: Feature[]
   map: Map
@@ -159,14 +160,22 @@ export class AppComponent {
     var fillColor = this.getColor(feature, this.attribute)
     if (hovered)
       fillColor = asArray(fillColor).slice(0, 3).map(value => value += 50).concat([.5])
+    var order = (this.values.findIndex(item => this.getShortenedId(item) == feature.get('GEOID')) + 1).toString()
 
     return new Style({
       stroke: new Stroke({
-        color: selected ? [255, 255, 255, 1] : [128, 128, 128, .5],
+        color: selected ? '#fff' : '#8888',
         width: selected ? 4 : 2
       }),
-      fill: new Fill({
-        color: fillColor
+      fill: new Fill({ color: fillColor }),
+      text: new Text({
+        font: '20px Arial',
+        fill: new Fill({ color: '#fff' }),
+        stroke: new Stroke({
+          color: '#000',
+          width: 4
+        }),
+        text: (this.showDetails && !this.showInfo) ? order : ''
       }),
       zIndex: selected ? 0 : -1
     })
@@ -189,7 +198,6 @@ export class AppComponent {
     this.currentItem = (await this.apiService.getFeatValues(this.resolution, geoId))['Items'][0]
 
     this.selectedFeature = feature
-    feature.setStyle(this.getStyle(feature, true))
     this.map.getView().setCenter(fromLonLat((
       [+feature.get('INTPTLON'), +feature.get('INTPTLAT')])))
     var extent = feature.getGeometry().getExtent()
@@ -198,6 +206,8 @@ export class AppComponent {
     this.showInfo = true
     if (!this.showDetails)
       this.detailsBtn.nativeElement.click()
+    else
+      this.updateFeatStyles(true)
     this.showTooltip = false
   }
 
@@ -243,13 +253,21 @@ export class AppComponent {
 
   toggleDetails() {
     this.showDetails = this.showDetails ? false : true
+    if (!this.showInfo)
+      this.updateFeatStyles(true)
     this.map.setSize([window.innerWidth - (this.showDetails ? 550 : 0), window.innerHeight - 108])
   }
 
   deselectFeature() {
-    var feature = this.selectedFeature
     this.selectedFeature = null
-    feature.setStyle(this.getStyle(feature, false))
     this.showInfo = false
+    this.updateFeatStyles()
+  }
+
+  updateFeatStyles(selected?: boolean) {
+    if (this.features) {
+      this.features.forEach(feature => feature.setStyle(this.getStyle(feature,
+        selected ? feature == this.selectedFeature : false)))
+    }
   }
 }

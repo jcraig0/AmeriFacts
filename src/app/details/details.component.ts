@@ -45,6 +45,7 @@ export class DetailsComponent {
   @Output() clickNameEvt = new EventEmitter()
   @Output() clickBackEvt = new EventEmitter()
   @Output() clickOrderEvt = new EventEmitter()
+  @Output() sortValuesEvt = new EventEmitter()
 
   constructor(private apiService: ApiService) { }
 
@@ -82,6 +83,7 @@ export class DetailsComponent {
       this.values.sort((item1, item2) => this.sortOrder.value ?
         item1[this.attribute].N - item2[this.attribute].N : item2[this.attribute].N - item1[this.attribute].N)
     }
+    this.sortValuesEvt.emit()
   }
 
   changeSortOrder(column: string, orderClicked?: boolean) {

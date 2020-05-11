@@ -33,7 +33,9 @@
     <app-details [hidden]="!showDetails" [style.height.px]="window.height - 108"
         [attributes]="attributes" [attribute]="attribute" [resolution]="resolution"
         [selectedFeature]="selectedFeature" [_values]="values" [_currentItem]="currentItem" [showInfo]="showInfo"
-        (clickNameEvt)="submit($event)" (clickBackEvt)="deselectFeature()" (clickOrderEvt)="selectAttribute($event, true)"></app-details>
+        (clickNameEvt)="submit($event)" (clickBackEvt)="deselectFeature()"
+        (clickOrderEvt)="selectAttribute($event, true)" (sortValuesEvt)="updateFeatStyles()">
+    </app-details>
     <div id="map" [style.width.px]="window.width - (showDetails ? 550 : 0)" [style.height.px]="window.height - 108"></div>
     <div id="tooltip" [hidden]="!showTooltip" [style.left.px]="mouse?.x - tooltipWidth / 2" [style.top.px] = "mouse?.y - 80">
         <b>{{tooltipText?.name}}</b><br>
