@@ -40,7 +40,7 @@ export class AppComponent {
   selectedFeature: Feature
   values: any[]
   currentItem
-  names: string[]
+  names: any[]
   bounds: { min: number, max: number }
   window = { width: window.innerWidth, height: window.innerHeight }
   showDetails = false
@@ -128,13 +128,23 @@ export class AppComponent {
     this.tooltipWidth = +document.getElementById('tooltip').offsetWidth
   }
 
+  async getNames() {
+    var allValues = this.values.map(item => { return { resolution: this.resolution, str: item.Name.S }})
+    this.attributes = Object.keys(
+      (await this.apiService.getFeatValues(this.resolution, this.values[0].ID.S))['Items'][0])
+      .filter(attr => !['ID', 'Name'].includes(attr))
+
+    for (let resolution of this.resolutions.slice(1))
+      allValues = allValues.concat((await this.apiService.getAttrValues(resolution, this.attribute))['Items']
+        .map(item => { return { resolution: resolution, str: item.Name.S }}))
+    return allValues
+  }
+
   async getFeatures(resolution: string, attribute: string, isNewRes?: boolean) {
     this.values = (await this.apiService.getAttrValues(resolution, attribute))['Items']
       .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
-    this.attributes = Object.keys(
-      (await this.apiService.getFeatValues(resolution, this.values[0].ID.S))['Items'][0])
-      .filter(attr => !['ID', 'Name'].includes(attr))
-    this.names = this.values.map(item => item.Name.S)
+    if (!this.names)
+      this.names = await this.getNames()
     var valueNums = this.values.map(item => +item[this.attribute].N)
     this.bounds = { min: Math.min(...valueNums), max: Math.max(...valueNums)}
 
@@ -214,7 +224,7 @@ export class AppComponent {
   selectAttribute(attribute: string, deselect?: boolean) {
     if (this.attribute != attribute) {
       this.attribute = attribute
-      from(this.getFeatures(this.resolution, this.attribute)).subscribe(features => {
+      this.getFeatures(this.resolution, this.attribute).then(features => {
         this.features = features
         if (deselect) {
           this.values.sort((item1, item2) => item2[this.attribute].N - item1[this.attribute].N)
@@ -235,15 +245,26 @@ export class AppComponent {
   search = (input: Observable<string>) =>
     input.pipe(
       map(input => input.length < 2 ? []
-        : this.names.filter(name => name.toLowerCase().includes(input.toLowerCase())))
+        : this.names.map(name => name.str).filter(name =>
+            name.toLowerCase().includes(input.toLowerCase()))
+              .sort((name1, name2) =>
+                name1.length - name2.length || name1.localeCompare(name2)).slice(0, 10))
     )
 
-  submit(query) {
+  selectFeatFromQuery(query: string) {
     var item = typeof query == 'string' ? this.values.find(item => item.Name.S == query) : query
     if (item) {
       var feature = this.features.find(feature => feature.get('GEOID') == this.getShortenedId(item))
       this.selectFeature(feature)
     }
+  }
+
+  submitQuery(query: string) {
+    var newResolution = this.names.find(name => name.str == query).resolution
+    if (newResolution != this.resolution)
+      this.selectResolution(newResolution).then(() => this.selectFeatFromQuery(query))
+    else
+      this.selectFeatFromQuery(query)
   }
 
   @HostListener('window:resize', ['$event'])
