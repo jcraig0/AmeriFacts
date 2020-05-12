@@ -81,6 +81,9 @@ export class AppComponent {
         this.showTooltip = false
       }
 
+      if (this.selectedFeature)
+        this.selectedFeature.setStyle(this.getStyle(this.selectedFeature, false))
+
       this.map.forEachFeatureAtPixel(evt.pixel, featLike => {
         hovered = <Feature<Geometry>>featLike
         hovered.setStyle(this.getStyle(hovered, true))
@@ -216,8 +219,7 @@ export class AppComponent {
     this.showInfo = true
     if (!this.showDetails)
       this.detailsBtn.nativeElement.click()
-    else
-      this.updateFeatStyles(true)
+    this.updateFeatStyles(true)
     this.showTooltip = false
   }
 
