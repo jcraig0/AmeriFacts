@@ -31,9 +31,7 @@ for file_name in file.namelist():
                         if item['PutRequest']['Item']['ID']['S'] == row[0])
                 except StopIteration:
                     name = row[1]
-                    if res_num == '050':
-                        name = name.split(',')[0]
-                    elif res_num == '500':
+                    if res_num == '500':
                         name = name.replace(' (116th Congress)', '')
                     curr_item = {'PutRequest': {'Item': {
                         'ID': {'S': row[0]}, 'Name': {'S': name}
