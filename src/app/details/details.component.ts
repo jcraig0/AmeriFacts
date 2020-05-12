@@ -8,7 +8,6 @@ import { ApiService } from '../api.service';
   styleUrls: ['./details.component.sass']
 })
 export class DetailsComponent {
-
   @Input() showInfo: boolean
   @Input() attributes: string[]
   @Input() attribute: string

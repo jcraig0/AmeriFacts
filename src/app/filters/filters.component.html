@@ -1,0 +1,23 @@
+<button id="filterBtn" *ngFor="let filter of filters">
+    <img id="delFilterBtn" src="../../assets/images/x.svg" width="18" height="18" (click)="deleteFilter(filter)">
+    {{filter}}
+</button>
+<button ngbDropdownItem (click)="open(content)"><b>Add Filter</b></button>
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Add Filter</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        Enter the name of the new filter in the text box below.<br>
+        <span style="color: gray">
+            Format: [attribute name] (is | < | > | <= | >=) ([value] | [value] - [value])
+        </span>
+        <input class="form-control" id="filterBox" type="text" placeholder="Name" [(ngModel)]="newFilter">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" (click)="modal.close()" [disabled]="!addEnabled">Add</button>
+    </div>
+</ng-template>

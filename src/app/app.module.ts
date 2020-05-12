@@ -9,11 +9,13 @@ import { DetailsComponent } from './details/details.component';
 
 import { ApiService } from './api.service';
 import { FormsModule } from '@angular/forms';
+import { FiltersComponent } from './filters/filters.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DetailsComponent
+    DetailsComponent,
+    FiltersComponent
   ],
   imports: [
     BrowserModule,

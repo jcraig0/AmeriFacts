@@ -27,7 +27,10 @@
             </button>
         </div>
     </div>
-    <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>Filters  </button></div>
+    <div ngbDropdown class="dropdown">
+        <button class="btn btn-outline-secondary" ngbDropdownToggle>Filters  </button>
+        <div ngbDropdownMenu><app-filters></app-filters></div>
+    </div>
 </div>
 <div>
     <app-details [hidden]="!showDetails" [style.height.px]="window.height - 108"
