@@ -29,7 +29,9 @@
     </div>
     <div ngbDropdown class="dropdown">
         <button class="btn btn-outline-secondary" ngbDropdownToggle>Filters  </button>
-        <div ngbDropdownMenu><app-filters></app-filters></div>
+        <div ngbDropdownMenu>
+            <app-filters [attributes]="attributes"></app-filters>
+        </div>
     </div>
 </div>
 <div>

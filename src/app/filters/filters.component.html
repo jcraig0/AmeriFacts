@@ -1,5 +1,5 @@
-<button id="filterBtn" *ngFor="let filter of filters">
-    <img id="delFilterBtn" src="../../assets/images/x.svg" width="18" height="18" (click)="deleteFilter(filter)">
+<button id="filterBtn" *ngFor="let filter of filters; index as i">
+    <img id="delFilterBtn" src="../../assets/images/x.svg" width="18" height="18" (click)="deleteFilter(i)">
     {{filter}}
 </button>
 <button ngbDropdownItem (click)="open(content)"><b>Add Filter</b></button>
