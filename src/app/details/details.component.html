@@ -25,7 +25,7 @@
     </div>
     <div class="line" *ngFor="let attribute of attributes">
         <span id="infoRow">{{attribute}}: {{currentItem && formatValue(currentItem[attribute].N, attribute)}}</span>
-        <span id="order">
+        <span id="order" *ngIf="currOrderNums[attribute]">
             <i>(<a [routerLink]="" (click)="clickOrder(attribute)"
                 >{{getOrderStr(currOrderNums[attribute])}}</a>)</i>
         </span>

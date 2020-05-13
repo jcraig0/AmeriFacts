@@ -10,10 +10,11 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  async getAttrValues(resolution: string, attribute: string) {
+  async getAttrValues(resolution: string, attribute: string, filters?: string[]) {
     return await this.http.post(this.rootUrl + 'attribute', {
       resolution: resolution.replace(' ', '_'),
-      attribute: attribute
+      attribute: attribute,
+      filters: filters ? filters : []
     }).toPromise()
   }
 

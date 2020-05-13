@@ -13,9 +13,10 @@
     <div class="modal-body">
         Enter the name of the new filter in the text box below.<br>
         <span style="color: gray">
-            Format: [attribute name] (is | < | > | <= | >=) ([value] | [value] - [value])
+            Format: [attribute name] (= | < | > | <= | >=) ([value] | [value] to [value])
         </span>
-        <input class="form-control" id="filterBox" type="text" placeholder="Name" [(ngModel)]="newFilter">
+        <input class="form-control" id="filterBox" type="text" placeholder="Name"
+            [(ngModel)]="newFilter" (keydown.enter)="submit()">
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary" (click)="modal.close()" [disabled]="!addEnabled">Add</button>

@@ -30,14 +30,14 @@
     <div ngbDropdown class="dropdown">
         <button class="btn btn-outline-secondary" ngbDropdownToggle>Filters  </button>
         <div ngbDropdownMenu>
-            <app-filters [attributes]="attributes"></app-filters>
+            <app-filters [attributes]="attributes" (updateFiltersEvt)="updateTableValues($event)"></app-filters>
         </div>
     </div>
 </div>
 <div>
     <app-details [hidden]="!showDetails" [style.height.px]="window.height - 108"
-        [attributes]="attributes" [attribute]="attribute" [resolution]="resolution"
-        [selectedFeature]="selectedFeature" [_values]="values" [_currentItem]="currentItem" [showInfo]="showInfo"
+        [attributes]="attributes" [attribute]="attribute" [resolution]="resolution" [selectedFeature]="selectedFeature"
+        [_values]="tableValues" [_filters]="filters" [_currentItem]="currentItem" [showInfo]="showInfo"
         (clickNameEvt)="selectFeatFromQuery($event)" (clickBackEvt)="deselectFeature()"
         (clickOrderEvt)="selectAttribute($event, true)" (sortValuesEvt)="updateFeatStyles()">
     </app-details>

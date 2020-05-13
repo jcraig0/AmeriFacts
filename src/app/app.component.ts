@@ -39,6 +39,8 @@ export class AppComponent {
   tooltipWidth: number
   selectedFeature: Feature
   values: any[]
+  tableValues: any[]
+  filters: string[]
   currentItem
   names: any[]
   bounds: { min: number, max: number }
@@ -131,6 +133,12 @@ export class AppComponent {
     this.tooltipWidth = +document.getElementById('tooltip').offsetWidth
   }
 
+  async updateTableValues(filters?: string[]) {
+    if (filters)
+      this.filters = filters
+    this.tableValues = (await this.apiService.getAttrValues(this.resolution, this.attribute, this.filters))['Items']
+  }
+
   async getNames() {
     var allValues = this.values.map(item => { return { resolution: this.resolution, str: item.Name.S }})
     this.attributes = Object.keys(
@@ -146,6 +154,7 @@ export class AppComponent {
   async getFeatures(resolution: string, attribute: string, isNewRes?: boolean) {
     this.values = (await this.apiService.getAttrValues(resolution, attribute))['Items']
       .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
+    this.updateTableValues()
     if (!this.names)
       this.names = await this.getNames()
     var valueNums = this.values.map(item => +item[this.attribute].N)
@@ -173,7 +182,7 @@ export class AppComponent {
     var fillColor = this.getColor(feature, this.attribute)
     if (hovered)
       fillColor = asArray(fillColor).slice(0, 3).map(value => value += 50).concat([.5])
-    var order = (this.values.findIndex(item => this.getShortenedId(item) == feature.get('GEOID')) + 1).toString()
+    var order = this.tableValues.findIndex(item => this.getShortenedId(item) == feature.get('GEOID')) + 1
 
     return new Style({
       stroke: new Stroke({
@@ -188,7 +197,7 @@ export class AppComponent {
           color: '#000',
           width: 4
         }),
-        text: (this.showDetails && !this.showInfo) ? order : ''
+        text: (this.showDetails && !this.showInfo && order != 0) ? order.toString() : ''
       }),
       zIndex: selected ? 0 : -1
     })

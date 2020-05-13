@@ -27,6 +27,14 @@ export class DetailsComponent {
       this.sortValues()
     }
   }
+  filters: string[]
+  @Input()
+  set _filters(filters: string[]) {
+    if (this.attributes) {
+      this.filters = filters
+      this.setOrderNums(true)
+    }
+  }
   currentItem
   @Input()
   set _currentItem(item) {
@@ -54,13 +62,12 @@ export class DetailsComponent {
     for (let attribute of this.attributes) {
       if (!(attribute in this.orderNums)) {
         var sortedVals = (attribute in this.values[0] ? this.values :
-          (await this.apiService.getAttrValues(this.resolution, attribute))['Items'])
+          (await this.apiService.getAttrValues(this.resolution, attribute, this.filters))['Items'])
           .sort((item1, item2) => item2[attribute].N - item1[attribute].N)
         this.orderNums[attribute] = {}
         sortedVals.map((item, idx) => this.orderNums[attribute][item.Name.S] = idx + 1)
       }
-      if (!newValues)
-        this.currOrderNums[attribute] = this.orderNums[attribute][this.currentItem.Name.S]
+      this.currOrderNums[attribute] = this.orderNums[attribute][this.currentItem.Name.S]
     }
   }
 
