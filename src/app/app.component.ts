@@ -187,10 +187,6 @@ export class AppComponent {
       * (allColors.length - 1) / (this.bounds.max - this.bounds.min))]
   }
 
-  changeColor() {
-    this.updateFeatStyles()
-  }
-
   getStyle(feature: FeatureLike, hovered: boolean) {
     var selected = feature == this.selectedFeature
     var fillColor = this.getColor(feature, this.attribute)

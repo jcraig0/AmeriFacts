@@ -33,9 +33,9 @@
             <app-filters [attributes]="attributes" (updateFiltersEvt)="updateTableValues($event)"></app-filters>
         </div>
     </div>
-    <input class="colorPicker" type="color" [(ngModel)]="colors.min" (change)="changeColor()">
+    <input class="colorPicker" type="color" [(ngModel)]="colors.min" (change)="updateFeatStyles()">
         ...
-    <input class="colorPicker" type="color" [(ngModel)]="colors.max" (change)="changeColor()">
+    <input class="colorPicker" type="color" [(ngModel)]="colors.max" (change)="updateFeatStyles()">
 </div>
 <div>
     <app-details [hidden]="!showDetails" [style.height.px]="window.height - 108"
