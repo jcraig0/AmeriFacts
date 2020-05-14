@@ -43,6 +43,7 @@ export class AppComponent {
   filters: string[]
   currentItem
   names: any[]
+  colors = { min: '#ff0000', max: '#0000ff' }
   bounds: { min: number, max: number }
   window = { width: window.innerWidth, height: window.innerHeight }
   showDetails = false
@@ -169,6 +170,27 @@ export class AppComponent {
     }).filter(feature => feature)
   }
 
+  hexToArray(hex: string) {
+    return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5), 16)]
+  }
+
+  getColor(feature: FeatureLike, attribute: string) {
+    var allColors = colormap({
+      colormap: [
+        {index: 0, rgb: this.hexToArray(this.colors.min)},
+        {index: 1, rgb: this.hexToArray(this.colors.max)}
+      ],
+      format: 'rgbaString',
+      alpha: .5
+    })
+    return allColors[~~((feature.get(attribute) - this.bounds.min)
+      * (allColors.length - 1) / (this.bounds.max - this.bounds.min))]
+  }
+
+  changeColor() {
+    this.updateFeatStyles()
+  }
+
   getStyle(feature: FeatureLike, hovered: boolean) {
     var selected = feature == this.selectedFeature
     var fillColor = this.getColor(feature, this.attribute)
@@ -193,18 +215,6 @@ export class AppComponent {
       }),
       zIndex: selected ? 0 : -1
     })
-  }
-
-  getColor(feature: FeatureLike, attribute: string) {
-    var value = feature.get(attribute);
-    if (isNaN(value))
-      return [0, 0, 0, 0]
-    else {
-      let colors = colormap({
-        colormap: 'cool', 'format': 'rgbaString', alpha: .5
-      })
-      return colors[~~((value - this.bounds.min) * (colors.length - 1) / (this.bounds.max - this.bounds.min))]
-    }
   }
 
   async selectFeature(feature: Feature) {
