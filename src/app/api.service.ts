@@ -33,7 +33,9 @@ export class ApiService {
     return await this.http.get('assets/shapefiles/' + resolution + '.json').toPromise()
   }
 
-  formatValue(value: string, isCurrency: boolean) {
+  formatValue(value: string, attribute: string) {
+    var currencyTerms = ['Household Income']
+    var isCurrency = currencyTerms.some(term => attribute.includes(term))
     return (isCurrency ? '$' : '') + (+value).toLocaleString()
   }
 }

@@ -108,7 +108,7 @@ export class DetailsComponent {
   }
 
   formatValue(value: string, attribute: string) {
-    return this.apiService.formatValue(value, attribute.includes('Income'))
+    return this.apiService.formatValue(value, attribute)
   }
 
   clickName(item) {

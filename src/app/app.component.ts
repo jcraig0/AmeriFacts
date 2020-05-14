@@ -28,6 +28,7 @@ export class AppComponent {
   title = 'amerifacts'
   attributes: string[]
   attribute = 'Population'
+  hasPercentage: boolean
   resolutions = ['State', 'Congressional District', 'County']
   resolution = this.resolutions[0]
   features: Feature[]
@@ -92,8 +93,7 @@ export class AppComponent {
         hovered.setStyle(this.getStyle(hovered, true))
         var item = this.values.find(item => this.getShortenedId(item) == hovered.get('GEOID'))
         if (item) {
-          let tooltipValue = this.apiService.formatValue(item[this.attribute]?.N,
-            this.attribute.includes('Income'))
+          let tooltipValue = this.apiService.formatValue(item[this.attribute]?.N, this.attribute)
           this.tooltipText = { name: item.Name.S, value: tooltipValue }
           this.showTooltip = true
         }

@@ -10,11 +10,15 @@ resolutions = {
 }
 columns = {
     '0003': [('Population', 129)],
-    '0062': [('Population Below Poverty Line', 7)],
+    '0062': [
+        ('Poverty Status', 6),
+        ('Poverty Status: Income Below Poverty Level', 7)
+    ],
     '0078': [('Median Household Income', 177)]
 }
 items_dict = {resolution: [] for resolution in resolutions.keys()}
 
+print('Reading survey data...')
 for file_name in file.namelist():
     if file_name[0] == 'g' and file_name[6:8] != 'us' and file_name[-4:] == '.csv':
         geo_file = pandas.read_csv(file.open(file_name), encoding='latin-1', header=None)
@@ -47,6 +51,7 @@ for file_name in file.namelist():
 client = boto3.client('dynamodb', region_name='us-east-2')
 
 for res_num, items in items_dict.items():
+    print("Loading data into table '{}'...".format(resolutions[res_num]))
     while items != []:
         client.batch_write_item(RequestItems={resolutions[res_num]: items[:25]})
         items = items[25:]

@@ -18,6 +18,9 @@
                 {{attribute}}
             </button>
         </div>
+        <div id="percentDiv">
+            <input id="percentBox" type="checkbox" [disabled]="!hasPercentage">%
+        </div>
     </div>
     <div ngbDropdown class="dropdown">
         <button class="btn btn-outline-secondary" id="resolution-btn" ngbDropdownToggle>by {{resolution}}  </button>
