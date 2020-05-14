@@ -136,27 +136,19 @@ export class AppComponent {
   async updateTableValues(filters?: string[]) {
     if (filters)
       this.filters = filters
-    this.tableValues = (await this.apiService.getAttrValues(this.resolution, this.attribute, this.filters))['Items']
-  }
-
-  async getNames() {
-    var allValues = this.values.map(item => { return { resolution: this.resolution, str: item.Name.S }})
-    this.attributes = Object.keys(
-      (await this.apiService.getFeatValues(this.resolution, this.values[0].ID.S))['Items'][0])
-      .filter(attr => !['ID', 'Name'].includes(attr))
-
-    for (let resolution of this.resolutions.slice(1))
-      allValues = allValues.concat((await this.apiService.getAttrValues(resolution, this.attribute))['Items']
-        .map(item => { return { resolution: resolution, str: item.Name.S }}))
-    return allValues
+    this.tableValues = (await this.apiService.getAttrValues(this.resolution, this.attribute, this.filters))
   }
 
   async getFeatures(resolution: string, attribute: string, isNewRes?: boolean) {
-    this.values = (await this.apiService.getAttrValues(resolution, attribute))['Items']
+    this.values = (await this.apiService.getAttrValues(resolution, attribute))
       .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
     this.updateTableValues()
-    if (!this.names)
-      this.names = await this.getNames()
+    if (!this.names) {
+      this.attributes = Object.keys(
+        (await this.apiService.getFeatValues(this.resolution, this.values[0].ID.S))[0])
+        .filter(attr => !['ID', 'Name'].includes(attr))
+      this.names = await this.apiService.getNames()
+    }
     var valueNums = this.values.map(item => +item[this.attribute].N)
     this.bounds = { min: Math.min(...valueNums), max: Math.max(...valueNums)}
 
@@ -217,7 +209,7 @@ export class AppComponent {
 
   async selectFeature(feature: Feature) {
     var geoId = this.values.find(item => this.getShortenedId(item) == feature.get('GEOID')).ID.S
-    this.currentItem = (await this.apiService.getFeatValues(this.resolution, geoId))['Items'][0]
+    this.currentItem = (await this.apiService.getFeatValues(this.resolution, geoId))[0]
 
     this.selectedFeature = feature
     this.map.getView().setCenter(fromLonLat((

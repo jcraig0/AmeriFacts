@@ -16,9 +16,14 @@ Resources:
         Api1:
           Type: Api
           Properties:
-            Path: /feature
+            Path: /names
             Method: ANY
         Api2:
+          Type: Api
+          Properties:
+            Path: /feature
+            Method: ANY
+        Api3:
           Type: Api
           Properties:
             Path: /attribute

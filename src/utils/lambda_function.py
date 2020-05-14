@@ -2,8 +2,9 @@ import json
 import boto3
 
 def lambda_handler(event, context):
-    body = json.loads(event['body'])
     client = boto3.client('dynamodb')
+    if 'body' in event:
+        body = json.loads(event['body'])
 
     if event['rawPath'] == '/attribute':
         attribute_names = {'#N': 'Name', '#A': body['attribute']}
@@ -41,12 +42,28 @@ def lambda_handler(event, context):
                 'FilterExpression': filter_expression
             })
         result = client.scan(**kwargs)
-    else:
+    elif event['rawPath'] == '/feature':
         result = client.query(
             TableName=body['resolution'],
             ExpressionAttributeValues={':featureId': {'S': body['featureId']}},
             KeyConditionExpression='ID = :featureId'
         )
+    else:
+        tables = client.list_tables()['TableNames']
+        result = []
+
+        for table in tables:
+            items = client.scan(
+                TableName=table,
+                ExpressionAttributeNames={'#N': 'Name'},
+                ProjectionExpression='#N'
+            )['Items']
+            result.extend(list(map(lambda item: {
+                'resolution': table.replace('_', ' '),
+                'str': item['Name']['S']
+            }, items)))
+
+        result = { 'names': result }
 
     return {
         'statusCode': 200,
