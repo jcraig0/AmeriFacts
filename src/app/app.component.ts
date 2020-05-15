@@ -1,5 +1,5 @@
 import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Map, View } from 'ol';
 import Feature, { FeatureLike } from 'ol/Feature';
@@ -110,9 +110,7 @@ export class AppComponent {
       })
     })
 
-    this.map.getViewport().addEventListener('mouseout', () => {
-      this.showTooltip = false
-    })
+    this.map.getViewport().addEventListener('mouseout', () => this.showTooltip = false)
   }
 
   getShortenedId(item) {
@@ -210,7 +208,7 @@ export class AppComponent {
     var selected = feature == this.selectedFeature
     var fillColor = this.getColor(feature, this.attribute)
     if (hovered)
-      fillColor = asArray(fillColor).slice(0, 3).map(value => value += 50).concat([.5])
+      fillColor = asArray(fillColor).slice(0, 3).map(value => value + 50).concat([.5])
     var order = this.tableValues.findIndex(item => this.getShortenedId(item) == feature.get('GEOID')) + 1
 
     return new Style({
