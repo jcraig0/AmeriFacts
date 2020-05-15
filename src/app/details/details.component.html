@@ -24,8 +24,11 @@
         <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
     </div>
     <div class="line" *ngFor="let attribute of attributes">
-        <span id="infoRow">{{attribute}}: {{currentItem && formatValue(currentItem[attribute].N, attribute)}}</span>
-        <span id="order" *ngIf="currOrderNums[attribute]">
+        <span id="infoRow">
+            {{formatAttribute(attribute)}}<span *ngIf="attrIsEnabled(attribute)"
+                >: {{currentItem && formatValue(currentItem[attribute].N, attribute)}}</span>
+        </span>
+        <span id="order" *ngIf="currOrderNums[attribute] && attrIsEnabled(attribute)">
             <i>(<a [routerLink]="" (click)="clickOrder(attribute)"
                 >{{getOrderStr(currOrderNums[attribute])}}</a>)</i>
         </span>

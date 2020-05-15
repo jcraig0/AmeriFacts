@@ -28,7 +28,7 @@ export class AppComponent {
   title = 'amerifacts'
   attributes: string[]
   attribute = 'Population'
-  hasPercentage: boolean
+  hasPercentage = false
   resolutions = ['State', 'Congressional District', 'County']
   resolution = this.resolutions[0]
   features: Feature[]
@@ -144,10 +144,10 @@ export class AppComponent {
     this.values = (await this.apiService.getAttrValues(resolution, attribute))
       .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
     this.updateTableValues()
-    if (!this.names) {
+    if (!this.attributes) {
       this.attributes = Object.keys(
         (await this.apiService.getFeatValues(this.resolution, this.values[0].ID.S))[0])
-        .filter(attr => !['ID', 'Name'].includes(attr))
+        .filter(attr => !['ID', 'Name'].includes(attr)).sort()
       this.names = await this.apiService.getNames()
     }
     var valueNums = this.values.map(item => +item[this.attribute].N)
@@ -233,6 +233,7 @@ export class AppComponent {
   selectAttribute(attribute: string, deselect?: boolean) {
     if (this.attribute != attribute) {
       this.attribute = attribute
+      this.hasPercentage = this.attribute.includes(':')
       this.getFeatures(this.resolution, this.attribute).then(features => {
         this.features = features
         if (deselect) {
@@ -243,6 +244,14 @@ export class AppComponent {
     }
     else if (deselect)
       this.deselectFeature()
+  }
+
+  formatAttribute(attribute: string, indent: boolean) {
+    return this.apiService.formatAttribute(attribute, indent)
+  }
+
+  attrIsEnabled(attribute: string) {
+    return this.apiService.attrIsEnabled(attribute, this.attributes)
   }
 
   async selectResolution(resolution: string) {

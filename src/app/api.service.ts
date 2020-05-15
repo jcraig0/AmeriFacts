@@ -38,4 +38,18 @@ export class ApiService {
     var isCurrency = currencyTerms.some(term => attribute.includes(term))
     return (isCurrency ? '$' : '') + (+value).toLocaleString()
   }
+
+  formatAttribute(attribute: string, indent: boolean) {
+    if (attribute.includes(':')) {
+      var tokens = attribute.split(':')
+      return indent ? tokens.slice(0, -1).map(_ => '\xa0\xa0\xa0').concat(tokens.slice(-1)).join('')
+        : tokens[tokens.length - 1]
+    }
+    else
+      return attribute
+  }
+
+  attrIsEnabled(attribute: string, attributes: string[]) {
+    return attribute.includes(':') || !attributes[attributes.indexOf(attribute) + 1].includes(':')
+  }
 }

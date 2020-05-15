@@ -12,10 +12,10 @@
     <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>2018  </button></div>
     <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>1-Year  </button></div>
     <div ngbDropdown class="dropdown">
-        <button class="btn btn-outline-secondary" id="attribute-btn" ngbDropdownToggle>{{attribute}}  </button>
+        <button class="btn btn-outline-secondary" id="attribute-btn" ngbDropdownToggle>{{formatAttribute(attribute, false)}}  </button>
         <div ngbDropdownMenu>
-            <button ngbDropdownItem *ngFor="let attribute of attributes" (click)="selectAttribute(attribute)">
-                {{attribute}}
+            <button ngbDropdownItem *ngFor="let attribute of attributes" [disabled]="!attrIsEnabled(attribute)" (click)="selectAttribute(attribute)">
+                {{formatAttribute(attribute, true)}}
             </button>
         </div>
         <div id="percentDiv">

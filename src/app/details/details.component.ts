@@ -111,6 +111,14 @@ export class DetailsComponent {
     return this.apiService.formatValue(value, attribute)
   }
 
+  formatAttribute(attribute: string) {
+    return this.apiService.formatAttribute(attribute, true)
+  }
+
+  attrIsEnabled(attribute: string) {
+    return this.apiService.attrIsEnabled(attribute, this.attributes)
+  }
+
   clickName(item) {
     this.clickNameEvt.emit(item)
   }
