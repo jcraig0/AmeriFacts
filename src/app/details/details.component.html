@@ -6,7 +6,7 @@
                 Name<img class="sortImg" src={{sortImgPath.name}} width="12" height="12">
             </th>
             <th class="sortColumn" (click)="changeSortOrder('value')">
-                {{attribute}}<img class="sortImg" src={{sortImgPath.value}} width="12" height="12">
+                {{formatAttribute(attribute, false)}}<img class="sortImg" src={{sortImgPath.value}} width="12" height="12">
             </th>
         </tr>
     </thead>
@@ -25,7 +25,7 @@
     </div>
     <div class="line" *ngFor="let attribute of attributes">
         <span id="infoRow">
-            {{formatAttribute(attribute)}}<span *ngIf="attrIsEnabled(attribute)"
+            {{formatAttribute(attribute, true)}}<span *ngIf="attrIsEnabled(attribute)"
                 >: {{currentItem && formatValue(currentItem[attribute].N, attribute)}}</span>
         </span>
         <span id="order" *ngIf="currOrderNums[attribute] && attrIsEnabled(attribute)">

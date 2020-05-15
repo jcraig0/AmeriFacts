@@ -29,6 +29,7 @@ export class AppComponent {
   attributes: string[]
   attribute = 'Population'
   hasPercentage = false
+  percentEnabled: boolean
   resolutions = ['State', 'Congressional District', 'County']
   resolution = this.resolutions[0]
   features: Feature[]
@@ -93,7 +94,8 @@ export class AppComponent {
         hovered.setStyle(this.getStyle(hovered, true))
         var item = this.values.find(item => this.getShortenedId(item) == hovered.get('GEOID'))
         if (item) {
-          let tooltipValue = this.apiService.formatValue(item[this.attribute]?.N, this.attribute)
+          let tooltipValue = this.apiService.formatValue(
+            item[this.attribute]?.N, this.attribute, this.percentEnabled)
           this.tooltipText = { name: item.Name.S, value: tooltipValue }
           this.showTooltip = true
         }
@@ -134,16 +136,33 @@ export class AppComponent {
     this.tooltipWidth = +document.getElementById('tooltip').offsetWidth
   }
 
+  async getPercentages(values: any[], geoId?: string) {
+    if (this.percentEnabled) {
+      let totalAttr = this.attribute.split(':')[0]
+      let totals = geoId ? await this.apiService.getFeatValues(this.resolution, geoId) :
+        await this.apiService.getAttrValues(this.resolution, totalAttr)
+      return values.map((item, idx) => {
+        item[this.attribute].N = (Math.round(+item[this.attribute].N
+          / +totals[idx][totalAttr].N * 10000) / 100).toString()
+        return item
+      })
+    }
+    else
+      return values
+  }
+
   async updateTableValues(filters?: string[]) {
     if (filters)
       this.filters = filters
-    this.tableValues = (await this.apiService.getAttrValues(this.resolution, this.attribute, this.filters))
+    this.tableValues = await this.getPercentages(
+      await this.apiService.getAttrValues(this.resolution, this.attribute, this.filters))
   }
 
   async getFeatures(resolution: string, attribute: string, isNewRes?: boolean) {
-    this.values = (await this.apiService.getAttrValues(resolution, attribute))
+    this.values = (await this.getPercentages(await this.apiService.getAttrValues(resolution, attribute)))
       .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
     this.updateTableValues()
+
     if (!this.attributes) {
       this.attributes = Object.keys(
         (await this.apiService.getFeatValues(this.resolution, this.values[0].ID.S))[0])
@@ -213,11 +232,17 @@ export class AppComponent {
     })
   }
 
-  async selectFeature(feature: Feature) {
-    var geoId = this.values.find(item => this.getShortenedId(item) == feature.get('GEOID')).ID.S
-    this.currentItem = (await this.apiService.getFeatValues(this.resolution, geoId))[0]
+  async setCurrentItem() {
+    var geoId = this.values.find(item =>
+      this.getShortenedId(item) == this.selectedFeature.get('GEOID')).ID.S
+    this.currentItem = (await this.getPercentages(
+      await this.apiService.getFeatValues(this.resolution, geoId), geoId))[0]
+  }
 
+  async selectFeature(feature: Feature) {
     this.selectedFeature = feature
+    this.setCurrentItem()
+
     this.map.getView().setCenter(fromLonLat((
       [+feature.get('INTPTLON'), +feature.get('INTPTLAT')])))
     var extent = feature.getGeometry().getExtent()
@@ -252,6 +277,12 @@ export class AppComponent {
 
   attrIsEnabled(attribute: string) {
     return this.apiService.attrIsEnabled(attribute, this.attributes)
+  }
+
+  async togglePercentage() {
+    this.features = await this.getFeatures(this.resolution, this.attribute)
+    if (this.selectedFeature)
+      this.setCurrentItem()
   }
 
   async selectResolution(resolution: string) {

@@ -19,7 +19,7 @@
             </button>
         </div>
         <div id="percentDiv">
-            <input id="percentBox" type="checkbox" [disabled]="!hasPercentage">%
+            <input id="percentBox" type="checkbox" [(ngModel)]="percentEnabled" [disabled]="!hasPercentage" (click)="togglePercentage()">%
         </div>
     </div>
     <div ngbDropdown class="dropdown">
@@ -42,9 +42,9 @@
 </div>
 <div>
     <app-details [hidden]="!showDetails" [style.height.px]="window.height - 108"
-        [attributes]="attributes" [attribute]="attribute" [resolution]="resolution" [selectedFeature]="selectedFeature"
-        [_values]="tableValues" [_filters]="filters" [_currentItem]="currentItem" [showInfo]="showInfo"
-        (clickNameEvt)="selectFeatFromQuery($event)" (clickBackEvt)="deselectFeature()"
+        [attributes]="attributes" [attribute]="attribute" [percentEnabled]="percentEnabled" [resolution]="resolution"
+        [selectedFeature]="selectedFeature" [_values]="tableValues" [_filters]="filters" [_currentItem]="currentItem"
+        [showInfo]="showInfo" (clickNameEvt)="selectFeatFromQuery($event)" (clickBackEvt)="deselectFeature()"
         (clickOrderEvt)="selectAttribute($event, true)" (sortValuesEvt)="updateFeatStyles()">
     </app-details>
     <div id="map" [style.width.px]="window.width - (showDetails ? 550 : 0)" [style.height.px]="window.height - 108"></div>

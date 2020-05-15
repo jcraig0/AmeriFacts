@@ -11,6 +11,7 @@ export class DetailsComponent {
   @Input() showInfo: boolean
   @Input() attributes: string[]
   @Input() attribute: string
+  @Input() percentEnabled: boolean
   @Input() resolution: string
   @Input()
   set selectedFeature(feature: Feature) {
@@ -67,7 +68,7 @@ export class DetailsComponent {
         this.orderNums[attribute] = {}
         sortedVals.map((item, idx) => this.orderNums[attribute][item.Name.S] = idx + 1)
       }
-      this.currOrderNums[attribute] = this.orderNums[attribute][this.currentItem.Name.S]
+      this.currOrderNums[attribute] = this.orderNums[attribute][this.currentItem?.Name.S]
     }
   }
 
@@ -108,11 +109,11 @@ export class DetailsComponent {
   }
 
   formatValue(value: string, attribute: string) {
-    return this.apiService.formatValue(value, attribute)
+    return this.apiService.formatValue(value, attribute, this.percentEnabled)
   }
 
-  formatAttribute(attribute: string) {
-    return this.apiService.formatAttribute(attribute, true)
+  formatAttribute(attribute: string, indent: boolean) {
+    return this.apiService.formatAttribute(attribute, indent)
   }
 
   attrIsEnabled(attribute: string) {

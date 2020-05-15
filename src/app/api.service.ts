@@ -33,10 +33,11 @@ export class ApiService {
     return await this.http.get('assets/shapefiles/' + resolution + '.json').toPromise()
   }
 
-  formatValue(value: string, attribute: string) {
+  formatValue(value: string, attribute: string, percentEnabled: boolean) {
     var currencyTerms = ['Household Income']
     var isCurrency = currencyTerms.some(term => attribute.includes(term))
-    return (isCurrency ? '$' : '') + (+value).toLocaleString()
+    var isPercentage = percentEnabled && attribute.includes(':')
+    return (isCurrency ? '$' : '') + (+value).toLocaleString() + (isPercentage ? '%' : '')
   }
 
   formatAttribute(attribute: string, indent: boolean) {
