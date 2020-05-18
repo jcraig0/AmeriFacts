@@ -144,6 +144,8 @@ export class AppComponent {
       return values.map((item, idx) => {
         item[this.attribute].N = (Math.round(+item[this.attribute].N
           / +totals[idx][totalAttr].N * 10000) / 100).toString()
+        item[this.attribute + ' MOE'].N = (Math.round(+item[this.attribute + ' MOE'].N
+          / +totals[idx][totalAttr].N * 10000) / 100).toString()
         return item
       })
     }
