@@ -50,6 +50,6 @@
     <div id="map" [style.width.px]="window.width - (showDetails ? 550 : 0)" [style.height.px]="window.height - 108"></div>
     <div id="tooltip" [hidden]="!showTooltip" [style.left.px]="mouse?.x - tooltipWidth / 2" [style.top.px] = "mouse?.y - 80">
         <b>{{tooltipText?.name}}</b><br>
-        {{tooltipText?.value}}
+        {{tooltipText?.value}} <span id="moe">&plusmn;{{tooltipText?.MOE}}</span>
     </div>
 </div>

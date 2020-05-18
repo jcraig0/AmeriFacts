@@ -36,7 +36,7 @@ export class AppComponent {
   map: Map
   mapElement: HTMLElement
   showTooltip = false
-  tooltipText: { name: string, value: string }
+  tooltipText: { name: string, value: string, MOE: string }
   mouse: { x: number, y: number }
   tooltipWidth: number
   selectedFeature: Feature
@@ -96,7 +96,9 @@ export class AppComponent {
         if (item) {
           let tooltipValue = this.apiService.formatValue(
             item[this.attribute]?.N, this.attribute, this.percentEnabled)
-          this.tooltipText = { name: item.Name.S, value: tooltipValue }
+          let tooltipMOE = this.apiService.formatValue(
+            item[this.attribute + ' MOE']?.N, this.attribute, this.percentEnabled)
+          this.tooltipText = { name: item.Name.S, value: tooltipValue, MOE: tooltipMOE }
           this.showTooltip = true
         }
         return true
@@ -164,7 +166,7 @@ export class AppComponent {
     if (!this.attributes) {
       this.attributes = Object.keys(
         (await this.apiService.getFeatValues(this.resolution, this.values[0].ID.S))[0])
-        .filter(attr => !['ID', 'Name'].includes(attr)).sort()
+        .filter(attr => !['ID', 'Name'].includes(attr) && !attr.includes('MOE')).sort()
       this.names = await this.apiService.getNames()
     }
     var valueNums = this.values.map(item => +item[this.attribute].N)
