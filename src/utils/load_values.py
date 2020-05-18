@@ -14,7 +14,7 @@ columns = {
         ('Poverty Status', 6),
         ('Poverty Status: Income Below Poverty Level', 7)
     ],
-    '0078': [('Median Household Income', 177)]
+    '0078': [('Median Household Income', 176)]
 }
 items_dict = {resolution: [] for resolution in resolutions.keys()}
 
@@ -26,8 +26,10 @@ for file_name in file.namelist():
             if row.iloc[48][:3] in resolutions.keys() and row.iloc[48][3:5] == '00'}
 
         for seq_num, seq_columns in columns.items():
-            est_file = pandas.read_csv(file.open(
-                'e20181' + file_name[6:8] + seq_num + '000.txt'), header=None)
+            file_name_end = '20181' + file_name[6:8] + seq_num + '000.txt'
+            est_file = pandas.read_csv(file.open('e' + file_name_end), header=None)
+            moe_file = pandas.read_csv(file.open('m' + file_name_end), header=None)
+
             for idx, row in rows.items():
                 res_num = row[0][:3]
                 try:
@@ -43,13 +45,14 @@ for file_name in file.namelist():
                     items_dict[res_num].append(curr_item)
 
                 req_columns = {}
-                for column in seq_columns:
+                for i, column in enumerate(seq_columns):
                     req_columns[column[0]] = {'N': str(est_file.iloc[idx, column[1]])}
+                    if ':' in column[0] or i+1 == len(seq_columns) or ':' not in seq_columns[i+1][0]:
+                        req_columns[column[0] + ' MOE'] = {'N': str(moe_file.iloc[idx, column[1]])}
 
                 curr_item['PutRequest']['Item'].update(req_columns)
 
 client = boto3.client('dynamodb', region_name='us-east-2')
-
 for res_num, items in items_dict.items():
     print("Loading data into table '{}'...".format(resolutions[res_num]))
     while items != []:

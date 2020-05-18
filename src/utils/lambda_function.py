@@ -5,9 +5,11 @@ def lambda_handler(event, context):
     client = boto3.client('dynamodb')
     if 'body' in event:
         body = json.loads(event['body'])
+        resolution = body['resolution'].replace(' ', '_')
 
     if event['rawPath'] == '/attribute':
-        attribute_names = {'#N': 'Name', '#A': body['attribute']}
+        attribute_names = {'#N': 'Name', '#V': body['attribute'],
+            '#M': body['attribute'] + ' MOE'}
         attribute_values = {}
         filter_expression = ''
 
@@ -32,9 +34,9 @@ def lambda_handler(event, context):
                 filter_expression += "#{0} between :{0} and :{0}a".format(str(i))
 
         kwargs = {
-            'TableName': body['resolution'],
+            'TableName': resolution,
             'ExpressionAttributeNames': attribute_names,
-            'ProjectionExpression': 'ID, #N, #A'
+            'ProjectionExpression': 'ID, #N, #V, #M'
         }
         if filter_expression:
             kwargs.update({
@@ -44,7 +46,7 @@ def lambda_handler(event, context):
         result = client.scan(**kwargs)
     elif event['rawPath'] == '/feature':
         result = client.query(
-            TableName=body['resolution'],
+            TableName=resolution,
             ExpressionAttributeValues={':featureId': {'S': body['featureId']}},
             KeyConditionExpression='ID = :featureId'
         )
