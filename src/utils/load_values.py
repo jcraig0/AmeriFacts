@@ -1,4 +1,5 @@
 import zipfile
+import json
 import pandas
 import boto3
 
@@ -8,14 +9,7 @@ resolutions = {
     '050': 'County',
     '500': 'Congressional_District'
 }
-columns = {
-    '0003': [('Population', 129)],
-    '0062': [
-        ('Poverty Status', 6),
-        ('Poverty Status: Income Below Poverty Level', 7)
-    ],
-    '0078': [('Median Household Income', 176)]
-}
+columns = json.loads(open('columns.json').read())
 items_dict = {resolution: [] for resolution in resolutions.keys()}
 
 print('Reading survey data...')

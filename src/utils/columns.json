@@ -1,0 +1,8 @@
+{
+    "0003": [["Population", 129]],
+    "0062": [
+        ["Poverty Status", 6],
+        ["Poverty Status: Income Below Poverty Level", 7]
+    ],
+    "0078": [["Median Household Income", 176]]
+}
