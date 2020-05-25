@@ -1,8 +1,95 @@
 {
+    "0002": [
+        ["Sex", 6],
+        ["Sex: Male", 7],
+        ["Sex: Female", 31]
+    ],
     "0003": [["Population", 129]],
+    "0004": [
+        ["Race", 6],
+        ["Race: White", 7],
+        ["Race: Black", 8],
+        ["Race: Native American", 9],
+        ["Race: Asian", 10],
+        ["Race: Pacific Islander", 11],
+        ["Race: Other", 12],
+        ["Race: Multiracial", 13]
+    ],
+    "0010": [
+        ["Nativity", 234],
+        ["Nativity: Native", 235],
+        ["Nativity: Born in State of Residence", 236],
+        ["Nativity: Born in Other State", 237],
+        ["Nativity: Born Outside United States", 238],
+        ["Nativity: Born Outside United States: Puerto Rico", 239],
+        ["Nativity: Born Outside United States: U.S. Islands or Abroad", 240],
+        ["Nativity: Foreign Born", 241]
+    ],
+    "0037": [
+        ["Means of Transportation to Work", 202],
+        ["Means of Transportation to Work: Car, Truck, or Van", 203],
+        ["Means of Transportation to Work: Car, Truck, or Van: Drove Alone", 204],
+        ["Means of Transportation to Work: Car, Truck, or Van: Carpooled", 205],
+        ["Means of Transportation to Work: Public Transportation", 209],
+        ["Means of Transportation to Work: Walking", 210],
+        ["Means of Transportation to Work: Other", 211],
+        ["Means of Transportation to Work: Worked at Home", 212]
+    ],
+    "0045": [["Population Under 18", 6]],
+    "0048": [
+        ["Household Type", 185],
+        ["Household Type: Family Households", 186],
+        ["Household Type: Family Households: 2-Person", 187],
+        ["Household Type: Family Households: 3-Person", 188],
+        ["Household Type: Family Households: 4-Person", 189],
+        ["Household Type: Family Households: 5-or-More Person", 190],
+        ["Household Type: Nonfamily Households", 191],
+        ["Household Type: Nonfamily Households: 1-Person", 192],
+        ["Household Type: Nonfamily Households: 2-Person", 193],
+        ["Household Type: Nonfamily Households: 3-Person", 194],
+        ["Household Type: Nonfamily Households: 4-Person", 195],
+        ["Household Type: Nonfamily Households: 5-or-More Person", 196]
+    ],
+    "0050": [
+        ["Marital Status", 84],
+        ["Marital Status: Never Married", 85],
+        ["Marital Status: Now Married", 96],
+        ["Marital Status: Separated", 107],
+        ["Marital Status: Widowed", 118],
+        ["Marital Status: Divorced", 129]
+    ],
+    "0052": [
+        ["School Enrollment", 6],
+        ["School Enrollment: Enrolled in School", 7],
+        ["School Enrollment: Not Enrolled in School", 15]
+    ],
+    "0056": [
+        ["Educational Attainment", 220],
+        ["Educational Attainment: High School Diploma", 229],
+        ["Educational Attainment: Associate's Degree", 233],
+        ["Educational Attainment: Bachelor's Degree", 234],
+        ["Educational Attainment: Master's Degree", 235],
+        ["Educational Attainment: Doctorate Degree", 237]
+    ],
+    "0058": [
+        ["Language Spoken at Home", 6],
+        ["Language Spoken at Home: English", 7],
+        ["Language Spoken at Home: Spanish", 8],
+        ["Language Spoken at Home: French", 11]
+    ],
     "0062": [
         ["Poverty Status", 6],
         ["Poverty Status: Income Below Poverty Level", 7]
     ],
-    "0078": [["Median Household Income", 176]]
+    "0078": [["Median Household Income", 176]],
+    "0086": [
+        ["Median Earnings", 49],
+        ["Median Earnings: Male", 50],
+        ["Median Earnings: Female", 51]
+    ],
+    "0103": [
+        ["Employment Status", 86],
+        ["Employment Status: In Labor Force", 87],
+        ["Employment Status: Not in Labor Force", 92]
+    ]
 }

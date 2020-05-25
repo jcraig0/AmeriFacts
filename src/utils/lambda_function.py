@@ -1,6 +1,7 @@
 import json
 import boto3
 
+
 def lambda_handler(event, context):
     client = boto3.client('dynamodb')
     if 'body' in event:
@@ -9,7 +10,7 @@ def lambda_handler(event, context):
 
     if event['rawPath'] == '/attribute':
         attribute_names = {'#N': 'Name', '#V': body['attribute'],
-            '#M': body['attribute'] + ' MOE'}
+                           '#M': body['attribute'] + ' MOE'}
         attribute_values = {}
         filter_expression = ''
 
@@ -18,20 +19,22 @@ def lambda_handler(event, context):
                 filter_expression += ' and '
             tokens = filter.split()
             op_idx = next(i for i, token in enumerate(tokens)
-                if token in ('=', '<', '<=', '>', '>='))
+                          if token in ('=', '<', '<=', '>', '>='))
             attribute_names['#' + str(i)] = ' '.join(tokens[:op_idx])
             endTokens = tokens[op_idx+1:]
 
             firstNum = (endTokens[0][1:] if endTokens[0][0] == '$'
-                else endTokens[0]).replace(',', '')
+                        else endTokens[0]).replace(',', '')
             attribute_values[':' + str(i)] = {'N': firstNum}
             if len(endTokens) == 1:
-                filter_expression += '#{0} {1} :{0}'.format(str(i), tokens[op_idx])
+                filter_expression += '#{0} {1} :{0}'.format(
+                    str(i), tokens[op_idx])
             else:
                 secondNum = (endTokens[2][1:] if endTokens[2][0] == '$'
-                    else endTokens[2]).replace(',', '')
+                             else endTokens[2]).replace(',', '')
                 attribute_values[':' + str(i) + 'a'] = {'N': secondNum}
-                filter_expression += "#{0} between :{0} and :{0}a".format(str(i))
+                filter_expression += "#{0} between :{0} and :{0}a" \
+                    .format(str(i))
 
         kwargs = {
             'TableName': resolution,
@@ -65,7 +68,7 @@ def lambda_handler(event, context):
                 'str': item['Name']['S']
             }, items)))
 
-        result = { 'names': result }
+        result = {'names': result}
 
     return {
         'statusCode': 200,
