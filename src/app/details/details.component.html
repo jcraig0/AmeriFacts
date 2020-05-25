@@ -23,9 +23,11 @@
         <img id="backBtn" src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="clickBack()">
         <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
     </div>
-    <div class="line" *ngFor="let attribute of attributes">
+    <div class="line" *ngFor="let attribute of currAttributes">
         <span id="infoRow">
-            {{formatAttribute(attribute, true)}}<span *ngIf="attrIsEnabled(attribute) && currentItem"
+            <span [ngClass]="{'attrHeader': !attrIsEnabled(attribute)}">
+                {{formatAttribute(attribute, true)}}</span>
+            <span *ngIf="attrIsEnabled(attribute)"
                 >: {{formatValue(currentItem[attribute].N, attribute)}}
                 <span id="moe">&plusmn;{{formatValue(currentItem[attribute + ' MOE'].N, attribute)}}</span>
             </span>

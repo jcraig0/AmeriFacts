@@ -15,7 +15,7 @@ export class ApiService {
       resolution: resolution.replace(' ', '_'),
       attribute: attribute,
       filters: filters ? filters : []
-    }).toPromise())['Items']
+    }).toPromise())['Items'].filter(item => item[attribute])
   }
 
   async getFeatValues(resolution: string, featureId: string) {

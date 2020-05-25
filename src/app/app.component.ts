@@ -161,6 +161,7 @@ export class AppComponent {
   }
 
   async getFeatures(resolution: string, attribute: string, isNewRes?: boolean) {
+    var oldValuesLen = this.values?.length
     this.values = (await this.getPercentages(await this.apiService.getAttrValues(resolution, attribute)))
       .sort((item1, item2) => item1.Name.S.localeCompare(item2.Name.S))
     this.updateTableValues()
@@ -175,7 +176,7 @@ export class AppComponent {
     this.bounds = { min: Math.min(...valueNums), max: Math.max(...valueNums)}
 
     var features
-    if (this.features && !isNewRes)
+    if (this.features && !isNewRes && this.values.length <= oldValuesLen)
       features = this.features
     else {
       features = new GeoJSON().readFeatures(await this.apiService.getShapes(resolution),
@@ -263,6 +264,7 @@ export class AppComponent {
       this.hasPercentage = this.attribute.includes(':')
       this.getFeatures(this.resolution, this.attribute).then(features => {
         this.features = features
+        this.map.getLayers().item(1).set('source', new VectorSource({ features: this.features }))
         if (deselect) {
           this.values.sort((item1, item2) => item2[this.attribute].N - item1[this.attribute].N)
           this.deselectFeature()

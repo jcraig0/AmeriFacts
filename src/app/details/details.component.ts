@@ -10,6 +10,7 @@ import { ApiService } from '../api.service';
 export class DetailsComponent {
   @Input() showInfo: boolean
   @Input() attributes: string[]
+  currAttributes: string[]
   @Input() attribute: string
   @Input() percentEnabled: boolean
   @Input() resolution: string
@@ -40,6 +41,8 @@ export class DetailsComponent {
   @Input()
   set _currentItem(item) {
     this.currentItem = item
+    if (this.attributes)
+      this.currAttributes = this.attributes.filter(attr => item[attr])
     if (Object.keys(this.orderNums).length) {
       for (let attribute in this.orderNums)
         this.currOrderNums[attribute] = this.orderNums[attribute][item.Name.S]

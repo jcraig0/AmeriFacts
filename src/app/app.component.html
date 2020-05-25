@@ -3,7 +3,7 @@
     <input class="form-control" type="text" placeholder="Search" [ngbTypeahead]="search" (keydown.enter)="submitQuery($event.target.value)">
 </div>
 <div id="bar">
-    <div class="btn-group-toggle" id="details-btn">
+    <div class="btn-group-toggle" id="detailsBtn">
         <label class="btn btn-primary" ngbButtonLabel>
             <input #detailsBtn type="checkbox" ngbButton (click)="toggleDetails()"> Details
         </label>
@@ -12,8 +12,8 @@
     <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>2018  </button></div>
     <div ngbDropdown class="dropdown"><button class="btn btn-outline-secondary" ngbDropdownToggle [disabled]=true>1-Year  </button></div>
     <div ngbDropdown class="dropdown">
-        <button class="btn btn-outline-secondary" id="attribute-btn" ngbDropdownToggle>{{formatAttribute(attribute, false)}}  </button>
-        <div ngbDropdownMenu>
+        <button class="btn btn-outline-secondary" id="attributeBtn" ngbDropdownToggle>{{formatAttribute(attribute, false)}}  </button>
+        <div ngbDropdownMenu id="dropdownMenu">
             <button ngbDropdownItem *ngFor="let attribute of attributes" [disabled]="!attrIsEnabled(attribute)" (click)="selectAttribute(attribute)">
                 {{formatAttribute(attribute, true)}}
             </button>
@@ -23,7 +23,7 @@
         </div>
     </div>
     <div ngbDropdown class="dropdown">
-        <button class="btn btn-outline-secondary" id="resolution-btn" ngbDropdownToggle>by {{resolution}}  </button>
+        <button class="btn btn-outline-secondary" id="resolutionBtn" ngbDropdownToggle>by {{resolution}}  </button>
         <div ngbDropdownMenu>
             <button ngbDropdownItem *ngFor="let resolution of resolutions" (click)="selectResolution(resolution)">
                 {{resolution}}
