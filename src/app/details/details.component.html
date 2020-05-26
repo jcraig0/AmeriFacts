@@ -16,7 +16,7 @@
             <td><a [routerLink]="" (click)="clickName(item)">{{item.Name.S}}</a></td>
             <td>
                 {{formatValue(item[attribute]?.N, attribute)}}
-                <span id="moe">&plusmn;{{formatValue(item[attribute + ' MOE']?.N, attribute)}}</span>
+                <span class="moe">&plusmn;{{formatValue(item[attribute + ' MOE']?.N, attribute)}}</span>
             </td>
         </tr>
     </tbody>
@@ -32,7 +32,7 @@
                 {{formatAttribute(attribute, true)}}</span>
             <span *ngIf="attrIsEnabled(attribute)"
                 >: {{formatValue(currentItem[attribute].N, attribute)}}
-                <span id="moe">&plusmn;{{formatValue(currentItem[attribute + ' MOE'].N, attribute)}}</span>
+                <span class="moe">&plusmn;{{formatValue(currentItem[attribute + ' MOE'].N, attribute)}}</span>
             </span>
         </span>
         <span id="order" *ngIf="currOrderNums[attribute] && attrIsEnabled(attribute)">
