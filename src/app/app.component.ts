@@ -116,18 +116,8 @@ export class AppComponent {
   }
 
   getShortenedId(item) {
-    var idLen
-    switch (this.resolution) {
-      case 'State':
-        idLen = 2
-        break
-      case 'County':
-        idLen = 5
-        break
-      case 'Congressional District':
-        idLen = 4
-    }
-    return item.ID.S.slice(-idLen)
+    var idLens = {'State': 2, 'County': 5, 'Congressional District': 4}
+    return item.ID.S.slice(-idLens[this.resolution])
   }
 
   @HostListener('mousemove', ['$event'])
@@ -136,28 +126,46 @@ export class AppComponent {
     this.tooltipWidth = +document.getElementById('tooltip').offsetWidth
   }
 
+  calcPercentage(attrValue: number, total: number) {
+    return (Math.round(attrValue / total * 10000) / 100).toString()
+  }
+
   async getPercentages(values: any[], geoId?: string) {
     if (this.percentEnabled) {
-      let totalAttr = this.attribute.split(':')[0]
-      let totals = geoId ? await this.apiService.getFeatValues(this.resolution, geoId) :
-        await this.apiService.getAttrValues(this.resolution, totalAttr)
-      return values.map((item, idx) => {
-        item[this.attribute].N = (Math.round(+item[this.attribute].N
-          / +totals[idx][totalAttr].N * 10000) / 100).toString()
-        item[this.attribute + ' MOE'].N = (Math.round(+item[this.attribute + ' MOE'].N
-          / +totals[idx][totalAttr].N * 10000) / 100).toString()
-        return item
-      })
+      if (geoId) {
+        let item = values[0]
+        Object.keys(item).map(attr => {
+          if (attr.includes(':')) {
+            let totalAttr = attr.split(':')[0]
+            item[attr].N = this.calcPercentage(+item[attr].N, +item[totalAttr].N)
+          }
+        })
+        return values
+      }
+      else {
+        let totalAttr = this.attribute.split(':')[0]
+        let totals = await this.apiService.getAttrValues(this.resolution, totalAttr)
+        return values.map((item, idx) => {
+          item[this.attribute].N = this.calcPercentage(
+            +item[this.attribute].N, +totals[idx][totalAttr].N)
+          item[this.attribute + ' MOE'].N = this.calcPercentage(
+            +item[this.attribute + ' MOE'].N, +totals[idx][totalAttr].N)
+          return item
+        })
+      }
     }
     else
       return values
   }
 
   async updateTableValues(filters?: string[]) {
-    if (filters)
+    if (filters) {
       this.filters = filters
-    this.tableValues = await this.getPercentages(
-      await this.apiService.getAttrValues(this.resolution, this.attribute, this.filters))
+      this.tableValues = await this.getPercentages(
+        await this.apiService.getAttrValues(this.resolution, this.attribute, this.filters))
+    }
+    else
+      this.tableValues = this.values
   }
 
   async getFeatures(resolution: string, attribute: string, isNewRes?: boolean) {
@@ -182,6 +190,7 @@ export class AppComponent {
       features = new GeoJSON().readFeatures(await this.apiService.getShapes(resolution),
         { featureProjection: 'EPSG:3857' })
     }
+
     return features.map(feature => {
       var item = this.values.find(item => this.getShortenedId(item) == feature.get('GEOID'))
       if (!item)

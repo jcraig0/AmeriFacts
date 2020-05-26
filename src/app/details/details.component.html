@@ -14,7 +14,10 @@
         <tr *ngFor="let item of values; index as i">
             <td>{{i + 1}}</td>
             <td><a [routerLink]="" (click)="clickName(item)">{{item.Name.S}}</a></td>
-            <td>{{formatValue(item[attribute]?.N, attribute)}}</td>
+            <td>
+                {{formatValue(item[attribute]?.N, attribute)}}
+                <span id="moe">&plusmn;{{formatValue(item[attribute + ' MOE']?.N, attribute)}}</span>
+            </td>
         </tr>
     </tbody>
 </table>

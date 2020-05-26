@@ -12,7 +12,7 @@ export class ApiService {
 
   async getAttrValues(resolution: string, attribute: string, filters?: string[]) {
     return (await this.http.post(this.rootUrl + 'attribute', {
-      resolution: resolution.replace(' ', '_'),
+      resolution: resolution,
       attribute: attribute,
       filters: filters ? filters : []
     }).toPromise())['Items'].filter(item => item[attribute])
@@ -20,7 +20,7 @@ export class ApiService {
 
   async getFeatValues(resolution: string, featureId: string) {
     return (await this.http.post(this.rootUrl + 'feature', {
-      resolution: resolution.replace(' ', '_'),
+      resolution: resolution,
       featureId: featureId
     }).toPromise())['Items']
   }
