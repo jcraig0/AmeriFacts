@@ -46,16 +46,24 @@ def lambda_handler(event, context):
                 'ExpressionAttributeValues': attribute_values,
                 'FilterExpression': filter_expression
             })
-        result = client.scan(**kwargs)
+
+        results = {'Items': []}
+        while True:
+            response = client.scan(**kwargs)
+            results['Items'].extend(response['Items'])
+            if 'LastEvaluatedKey' in response:
+                kwargs['ExclusiveStartKey'] = response['LastEvaluatedKey']
+            else:
+                break
     elif event['rawPath'] == '/feature':
-        result = client.query(
+        results = client.query(
             TableName=resolution,
             ExpressionAttributeValues={':featureId': {'S': body['featureId']}},
             KeyConditionExpression='ID = :featureId'
         )
     else:
         tables = client.list_tables()['TableNames']
-        result = []
+        results = []
 
         for table in tables:
             items = client.scan(
@@ -63,14 +71,14 @@ def lambda_handler(event, context):
                 ExpressionAttributeNames={'#N': 'Name'},
                 ProjectionExpression='#N'
             )['Items']
-            result.extend(list(map(lambda item: {
+            results.extend(list(map(lambda item: {
                 'resolution': table.replace('_', ' '),
                 'str': item['Name']['S']
             }, items)))
 
-        result = {'names': result}
+        results = {'names': results}
 
     return {
         'statusCode': 200,
-        'body': json.dumps(result)
+        'body': json.dumps(results)
     }
