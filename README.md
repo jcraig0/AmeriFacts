@@ -2,11 +2,11 @@
 
 ## Usage
 
-This single-page web application lets you easily view data of geographic features in the United States. Currently, it uses the 1-year data from the 2018 American Community Survey.
+This single-page web application lets you intuitively view data of geographic features in the United States. It currently uses the 1-year data from the 2018 American Community Survey.
 
-There are two main areas of AmeriFacts. The map view shows the features color-graded, based on the values of the selected attribute. Hovering over a feature shows its name, its attribute value, and the value's margin-of-error. The details view, opened with the "Details" button, shows either an ordered table of the map's features or all the info for a selected feature. A feature can be selected by clicking on it.
+There are two main areas of AmeriFacts. The map view visualizes the features for a given resolution, color-graded by the values of the selected attribute. Hovering over a feature shows its name, its attribute value, and the value's margin-of-error. The details view shows either a table of the map's features or all available info for a selected feature. A feature can be selected by clicking on it. The table can be ordered by the name or the selected attribute, and the info gives the ordinal number for each attribute.
 
-A search bar at the top of the page allows you to select a feature by entering its name. Suggested results appear below the bar as you type the query. The controls bar below has functions to open/close the details view, choose the attribute to be displayed on the map and table, enable/disable percentage values, choose a resolution (i.e. summary level), add/remove filters on the map's features, and change the features' color scheme.
+A search bar at the top of the page allows you to select a feature by entering its name. Suggested results appear below the bar as the query is typed. The controls bar below has functions to open/close the details view, choose the attribute displayed in the map and table, enable/disable percentage values, choose a resolution (i.e. summary level), add/remove filters on the map's features, and change the features' color scheme.
 
 ### Notes
 * Due to a limitation in the 1-year ACS data, the "County" resolution only includes counties with at least 65,000 people.
