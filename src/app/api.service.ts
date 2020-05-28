@@ -44,7 +44,7 @@ export class ApiService {
     if (attribute.includes(':')) {
       var tokens = attribute.split(':')
       return indent ? tokens.slice(0, -1).map(_ => '\xa0\xa0\xa0').concat(tokens.slice(-1)).join('')
-        : tokens[tokens.length - 1]
+        : tokens[tokens.length - 1].trim()
     }
     else
       return attribute

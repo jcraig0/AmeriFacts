@@ -1,29 +1,34 @@
-<table [hidden]="showInfo">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th class="sortColumn" (click)="changeSortOrder('name')">
-                Name<img class="sortImg" src={{sortImgPath.name}} width="12" height="12">
-            </th>
-            <th class="sortColumn" (click)="changeSortOrder('value')">
-                {{formatAttribute(attribute, false)}}<img class="sortImg" src={{sortImgPath.value}} width="12" height="12">
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let item of values; index as i">
-            <td>{{i + 1}}</td>
-            <td><a [routerLink]="" (click)="clickName(item)">{{item.Name.S}}</a></td>
-            <td>
-                {{formatValue(item[attribute]?.N, attribute)}}
-                <span class="moe">&plusmn;{{formatValue(item[attribute + ' MOE']?.N, attribute)}}</span>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div [hidden]="showInfo">
+    <a [href]="getExportText()" download={{getExportName()}}>
+        <img class="hoverCursor" id="exportBtn" src="../../assets/images/download.svg" width="24" height="24">
+    </a>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="sortColumn hoverCursor" (click)="changeSortOrder('name')">
+                    Name<img class="sortImg" src={{sortImgPath.name}} width="12" height="12">
+                </th>
+                <th class="sortColumn hoverCursor" (click)="changeSortOrder('value')">
+                    {{formatAttribute(attribute, false)}}<img class="sortImg" src={{sortImgPath.value}} width="12" height="12">
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of values; index as i">
+                <td>{{i + 1}}</td>
+                <td><a [routerLink]="" (click)="clickName(item)">{{item.Name.S}}</a></td>
+                <td>
+                    {{formatValue(item[attribute]?.N, attribute)}}
+                    <span class="moe">&plusmn;{{formatValue(item[attribute + ' MOE']?.N, attribute)}}</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 <div [hidden]="!showInfo">
     <div class="line">
-        <img id="backBtn" src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="clickBack()">
+        <img class="hoverCursor" id="backBtn" src="../../assets/images/arrow-left.svg" width="24" height="24" (click)="clickBack()">
         <span id="infoName"><b>{{currentItem?.Name.S}}</b></span>
     </div>
     <div class="line" *ngFor="let attribute of currAttributes">

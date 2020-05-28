@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Feature } from 'ol';
 import { ApiService } from '../api.service';
 
@@ -58,7 +59,7 @@ export class DetailsComponent {
   @Output() clickOrderEvt = new EventEmitter()
   @Output() sortValuesEvt = new EventEmitter()
 
-  constructor(private apiService: ApiService) { }
+  constructor(private sanitizer: DomSanitizer, private apiService: ApiService) { }
 
   async setOrderNums(newValues: boolean) {
     if (newValues)
@@ -121,6 +122,23 @@ export class DetailsComponent {
 
   attrIsEnabled(attribute: string) {
     return this.apiService.attrIsEnabled(attribute, this.attributes)
+  }
+
+  getExportText() {
+    if (this.values) {
+      var fmtdAttribute = this.formatAttribute(this.attribute, false)
+      var fileText = `Name,${fmtdAttribute},${fmtdAttribute} MOE\n`
+      this.values.forEach(item => fileText +=
+        `${item.Name.S},"${this.formatValue(item[this.attribute]?.N, this.attribute)}"`
+        + `,"${this.formatValue(item[this.attribute + ' MOE']?.N, this.attribute)}"\n`)
+      return this.sanitizer.bypassSecurityTrustUrl('data:text/csv;charset=utf-8,' + fileText)
+    }
+  }
+
+  getExportName() {
+    var attribute = this.attribute.replace(/:/g, '\uA789')
+    return 'American Community Survey, 2018, 1-Year, '
+      + `${attribute}${this.percentEnabled ? ' (%)' : ''} by ${this.resolution}.csv`
   }
 
   clickName(item) {
