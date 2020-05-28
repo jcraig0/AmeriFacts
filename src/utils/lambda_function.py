@@ -7,6 +7,9 @@ def lambda_handler(event, context):
     if 'body' in event:
         body = json.loads(event['body'])
         resolution = body['resolution'].replace(' ', '_')
+    elif 'queryStringParameters' in event:
+        args = event['queryStringParameters']
+        resolution = args['resolution'].replace(' ', '_')
 
     if event['rawPath'] == '/attribute':
         attribute_names = {'#N': 'Name', '#V': body['attribute'],
@@ -14,10 +17,10 @@ def lambda_handler(event, context):
         attribute_values = {}
         filter_expression = ''
 
-        for i, filter in enumerate(body['filters']):
+        for i, _filter in enumerate(body['filters']):
             if i != 0:
                 filter_expression += ' and '
-            tokens = filter.split()
+            tokens = _filter.split()
             op_idx = next(i for i, token in enumerate(tokens)
                           if token in ('=', '<', '<=', '>', '>='))
             attribute_names['#' + str(i)] = ' '.join(tokens[:op_idx])
@@ -58,7 +61,7 @@ def lambda_handler(event, context):
     elif event['rawPath'] == '/feature':
         results = client.query(
             TableName=resolution,
-            ExpressionAttributeValues={':featureId': {'S': body['featureId']}},
+            ExpressionAttributeValues={':featureId': {'S': args['featureId']}},
             KeyConditionExpression='ID = :featureId'
         )
     else:

@@ -19,10 +19,10 @@ export class ApiService {
   }
 
   async getFeatValues(resolution: string, featureId: string) {
-    return (await this.http.post(this.rootUrl + 'feature', {
+    return (await this.http.get(this.rootUrl + 'feature', {params: {
       resolution: resolution,
       featureId: featureId
-    }).toPromise())['Items']
+    }}).toPromise())['Items']
   }
 
   async getNames() {

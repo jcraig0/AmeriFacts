@@ -10,7 +10,7 @@ Resources:
       CodeUri: .
       Description: ''
       MemorySize: 128
-      Timeout: 3
+      Timeout: 5
       Role: 'arn:aws:iam::957887051703:role/LambdaRole'
       Events:
         Api1:
