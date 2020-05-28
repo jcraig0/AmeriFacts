@@ -4,11 +4,13 @@
 
 This single-page web application lets you intuitively view data of geographic features in the United States. It currently uses the 1-year data from the 2018 American Community Survey.
 
-There are two main areas of AmeriFacts. The map view visualizes the features for a given resolution, color-graded by the values of the selected attribute. Hovering over a feature shows its name, its attribute value, and the value's margin-of-error. The details view shows either a table of the map's features or all available info for a selected feature. A feature can be selected by clicking on it. The table can be ordered by the name or the selected attribute, and the info gives the ordinal number for each attribute.
+There are two main areas of AmeriFacts. The map view visualizes the features for a given resolution, color-graded by the values of the selected attribute. Hovering over a feature shows its name, its attribute value, and the value's margin-of-error. The details view shows either a table of the map's features or all available info for a selected feature. A feature can be selected by clicking on it. The table can be ordered by the name or the selected attribute, and the info includes the ordinal number for each attribute. You can also export the table's contents as a CSV file.
 
 A search bar at the top of the page allows you to select a feature by entering its name. Suggested results appear below the bar as the query is typed. The controls bar below has functions to open/close the details view, choose the attribute displayed in the map and table, enable/disable percentage values, choose a resolution (i.e. summary level), add/remove filters on the map's features, and change the features' color scheme.
 
 ### Notes
+* AmeriFacts has only been tested on Google Chrome.
+* Not all ordinal numbers may appear in a feature's info. This is probably caused by excessive calls to the /attribute endpoint.
 * Due to a limitation in the 1-year ACS data, the "County" resolution only includes counties with at least 65,000 people.
 * The "County" resolution's shapefile is ~10 MB, so a fast Internet connection is recommended to select this level.
 
@@ -27,6 +29,6 @@ The back end must be configured to be able to run this application locally. An A
 5. Using a Python 3 environment, install the required libraries for the `src\utils` scripts with pip and `requirements.txt`.
 6. Run `load_values.py` to load the survey data into the DynamoDB database.
 7. Run `create_shapefiles.py` to create the GeoJSON shapefiles from the TIGER/Line data.
-8. In API Gateway, create an HTTP API with the endpoints POST /attribute, POST /feature, and GET /names.
+8. In API Gateway, create an HTTP API with the endpoints POST /attribute, GET /feature, and GET /names.
 9. In Lambda, create the function "ValuesFunction" and its API Gateway triggers, using `ValuesFunction.yaml` as a reference. Make the runtime "Python 3.8". Copy and paste `lambda_function.py` into the code window for "ValuesFunction".
 10. The back end should now be all set up. Install Node.js, then run `npm i` in the AmeriFacts folder. Run `npm i -g @angular/cli` to install Angular. Finally, enter `ng serve` to run the front-end code.
