@@ -177,7 +177,8 @@ export class AppComponent {
     if (!this.attributes) {
       this.attributes = Object.keys(
         (await this.apiService.getFeatValues(this.resolution, this.values[0].ID.S))[0])
-        .filter(attr => !['ID', 'Name'].includes(attr) && !attr.includes('MOE')).sort()
+        .filter(attr => !['ID', 'Name'].includes(attr)
+          && !attr.endsWith('MOE') && !attr.endsWith('Ord')).sort()
       this.names = await this.apiService.getNames()
     }
     var valueNums = this.values.map(item => +item[this.attribute].N)

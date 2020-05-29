@@ -12,8 +12,11 @@ def lambda_handler(event, context):
         resolution = args['resolution'].replace(' ', '_')
 
     if event['rawPath'] == '/attribute':
-        attribute_names = {'#N': 'Name', '#V': body['attribute'],
-                           '#M': body['attribute'] + ' MOE'}
+        attribute_names = {
+            '#N': 'Name', '#V': body['attribute'],
+            '#M': body['attribute'] + ' MOE',
+            '#O': body['attribute'] + ' Ord'
+        }
         attribute_values = {}
         filter_expression = ''
 
@@ -42,7 +45,7 @@ def lambda_handler(event, context):
         kwargs = {
             'TableName': resolution,
             'ExpressionAttributeNames': attribute_names,
-            'ProjectionExpression': 'ID, #N, #V, #M'
+            'ProjectionExpression': 'ID, #N, #V, #M, #O'
         }
         if filter_expression:
             kwargs.update({

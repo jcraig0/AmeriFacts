@@ -40,9 +40,9 @@
                 <span class="moe">&plusmn;{{formatValue(currentItem[attribute + ' MOE'].N, attribute)}}</span>
             </span>
         </span>
-        <span id="order" *ngIf="currOrderNums[attribute] && attrIsEnabled(attribute)">
+        <span id="order" *ngIf="attrIsEnabled(attribute)">
             <i>(<a [routerLink]="" (click)="clickOrder(attribute)"
-                >{{getOrderStr(currOrderNums[attribute])}}</a>)</i>
+                >{{getOrderStr(orderNums[attribute])}}</a>)</i>
         </span>
     </div>
 </div>

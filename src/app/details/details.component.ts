@@ -15,44 +15,35 @@ export class DetailsComponent {
   @Input() attribute: string
   @Input() percentEnabled: boolean
   @Input() resolution: string
-  @Input()
-  set selectedFeature(feature: Feature) {
-    if (feature)
-      this.setOrderNums(false)
-  }
   values: any[]
   @Input()
   set _values(values: any[]) {
     if (values) {
       this.values = values
-      if (this.showInfo)
-        this.setOrderNums(true)
       this.sortValues()
     }
   }
   filters: string[]
   @Input()
   set _filters(filters: string[]) {
-    if (this.attributes) {
+    if (this.attributes)
       this.filters = filters
-      this.setOrderNums(true)
-    }
   }
+  orderNums = {}
   currentItem
   @Input()
   set _currentItem(item) {
     this.currentItem = item
-    if (this.attributes)
+    if (this.attributes) {
       this.currAttributes = this.attributes.filter(attr => item[attr])
-    if (Object.keys(this.orderNums).length) {
-      for (let attribute in this.orderNums)
-        this.currOrderNums[attribute] = this.orderNums[attribute][item.Name.S]
+      this.currAttributes.forEach(attr => {
+        if (item[attr + ' Ord'] && item[attr + ' Ord'].N != '0')
+          this.orderNums[attr] = item[attr + ' Ord'].N
+      })
     }
   }
   sortOrder = { name: true, value: null }
   sortImgPath = this.getSortImgPath()
-  orderNums = {}
-  currOrderNums = {}
 
   @Output() clickNameEvt = new EventEmitter()
   @Output() clickBackEvt = new EventEmitter()
@@ -60,21 +51,6 @@ export class DetailsComponent {
   @Output() sortValuesEvt = new EventEmitter()
 
   constructor(private sanitizer: DomSanitizer, private apiService: ApiService) { }
-
-  async setOrderNums(newValues: boolean) {
-    if (newValues)
-      this.orderNums = {}
-    for (let attribute of this.attributes) {
-      if (!(attribute in this.orderNums)) {
-        var sortedVals = (attribute in this.values[0] ? this.values :
-          (await this.apiService.getAttrValues(this.resolution, attribute, this.filters)))
-          .sort((item1, item2) => item2[attribute].N - item1[attribute].N)
-        this.orderNums[attribute] = {}
-        sortedVals.map((item, idx) => this.orderNums[attribute][item.Name.S] = idx + 1)
-      }
-      this.currOrderNums[attribute] = this.orderNums[attribute][this.currentItem?.Name.S]
-    }
-  }
 
   getSortImgPath() {
     return {

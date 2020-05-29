@@ -58,7 +58,21 @@ for file_name in file.namelist():
                 curr_item['PutRequest']['Item'].update(req_columns)
 
 client = boto3.client('dynamodb', region_name='us-east-2')
+all_attributes = list(
+    items_dict[list(items_dict.keys())[0]][0]['PutRequest']['Item'].keys())
+attributes = [attr for i, attr in enumerate(all_attributes)
+              if attr not in ('ID', 'Name') and 'MOE' not in attr
+              and (':' in attr or ':' not in all_attributes[i+1])]
+
 for res_num, items in items_dict.items():
+    for attribute in attributes:
+        items = sorted(items, key=lambda item:
+                       float(item['PutRequest']['Item'][attribute]['N'])
+                       if attribute in item['PutRequest']['Item']
+                       else float('-inf'), reverse=True)
+        for i, item in enumerate(items):
+            item['PutRequest']['Item'][attribute + ' Ord'] = {'N': str(i + 1)}
+
     print("Loading data into table '{}'...".format(resolutions[res_num]))
     for i in range(0, len(items), 25):
         print('    Items {} to {}...'.format(i+1, min(i+25, len(items))))
